@@ -494,7 +494,8 @@
     
         /* ============ MÓDULO TÁBATA (v4 integrado) ============ */
         /* Con 6 botones la nav necesita ítems un poco más angostos */
-        .bottom-nav .nav-btn { min-width: 50px; }
+        .bottom-nav .nav-btn { min-width: 44px; }
+        .bottom-nav .nav-btn { font-size: .62rem; }
 
         #view-tabata {
             background: #14151A;
@@ -2785,6 +2786,12 @@
 </div>
 
 <!-- VISTA: PROGRESO -->
+<!-- VISTA: ESTILO MIKE (Heavy Duty) -->
+<div id="view-mike" class="app-view">
+    <div class="v2-header mk-header"><h1>🔥 Estilo Mike</h1><p>Heavy Duty: pocas series, máxima intensidad</p></div>
+    <div class="v2-container" id="mike-root"></div>
+</div>
+
 <div id="view-progreso" class="app-view">
     <div class="v2-header"><h1>📈 Mi Progreso</h1><p>Pesos, medidas, fotos y récords</p></div>
     <div class="v2-container">
@@ -3126,6 +3133,10 @@
         <span class="ico">🏋️</span>
         <span><span class="tit">Gimnasio</span><span class="sub">Tu rutina con pesas y máquinas</span></span>
     </button>
+    <button class="inicio-card inicio-mike" id="inicio-mike" style="background:linear-gradient(135deg,#7b1e1e,#e67e22)">
+        <span class="ico">🔥</span>
+        <span><span class="tit">Estilo Mike</span><span class="sub">Heavy Duty: 1 serie al fallo por ejercicio</span></span>
+    </button>
     <button class="inicio-card inicio-tabata" id="inicio-tabata">
         <span class="ico">⚡</span>
         <span><span class="tit">Tábata</span><span class="sub">Intervalos de alta intensidad, sin equipo</span></span>
@@ -3137,6 +3148,7 @@
 <nav class="bottom-nav">
     <button class="nav-btn active" data-view="ejercicios"><span class="nav-ico">🏋️</span>Ejercicios</button>
     <button class="nav-btn" data-view="rutina"><span class="nav-ico">📋</span>Rutina</button>
+    <button class="nav-btn" data-view="mike"><span class="nav-ico">🔥</span>Mike</button>
     <button class="nav-btn" data-view="progreso"><span class="nav-ico">📈</span>Progreso</button>
     <button class="nav-btn" data-view="nutricion"><span class="nav-ico">🍎</span>Nutrición</button>
     <button class="nav-btn" data-view="tabata"><span class="nav-ico">⚡</span>Tábata</button>
@@ -3521,6 +3533,8 @@ function comprimirImagen(file){
 let _mediaCb = null;
 const $mediaInput = document.getElementById('media-file-input');
 function pedirMedia(cb){ _mediaCb = cb; $mediaInput.value = ''; $mediaInput.click(); }
+// Para módulos agregados aparte (ej. Estilo Mike): mismo almacenamiento y mismo backup.
+window._gymMedia = { put: mediaPut, del: mediaDel, url: mediaURL, pedir: pedirMedia };
 $mediaInput.addEventListener('change', async (e) => {
     const f = e.target.files && e.target.files[0];
     const cb = _mediaCb; _mediaCb = null;
@@ -3916,7 +3930,7 @@ function alternativas(ex){
 }
 
 /* ---------- Navegación ---------- */
-const vistas = ['ejercicios','rutina','progreso','nutricion','perfil','tabata'];
+const vistas = ['ejercicios','rutina','mike','progreso','nutricion','perfil','tabata'];
 function irA(v){
     vistas.forEach(x => {
         const el = document.getElementById('view-'+x);
@@ -3928,6 +3942,7 @@ function irA(v){
     if (v === 'nutricion') renderNutricion();
     if (v === 'perfil') renderPerfil();
     if (v === 'rutina') renderRutina();
+    if (v === 'mike' && window._mikeRender) window._mikeRender();
     if (v === 'tabata' && window._tbAlEntrar) window._tbAlEntrar();
     if (v !== 'tabata' && window._tbPausarSiSale) window._tbPausarSiSale();
     const tfab = document.getElementById('tabata-fab');
@@ -5672,15 +5687,352 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 })();
 </script>
 
+<!-- ============ v1.0.2: MÓDULO ESTILO MIKE (Heavy Duty, inspirado en Mike Mentzer) ============ -->
+<div id="mk-lightbox"><img alt=""><p></p></div>
+<style>
+    .mk-header { background: linear-gradient(135deg, #7b1e1e, #c0392b 60%, #e67e22); }
+    .mk-days { display:flex; gap:.5rem; margin:1.2rem 0 1rem; }
+    .mk-day { flex:1; background:#fff; border:2px solid #e3e8ed; border-radius:10px; padding:.55rem .3rem; text-align:center; cursor:pointer; font-weight:bold; color:var(--primary-color); font-size:.8rem; position:relative; }
+    .mk-day .ico { display:block; font-size:1.3rem; }
+    .mk-day.active { border-color:#c0392b; background:#fff5f2; }
+    .mk-day .toca { position:absolute; top:-9px; left:50%; transform:translateX(-50%); background:#c0392b; color:#fff; font-size:.6rem; padding:1px 7px; border-radius:10px; white-space:nowrap; }
+    .mk-equip { display:flex; gap:.35rem; flex-wrap:wrap; }
+    .mk-chip { border:1px solid #ccd5dd; background:#fff; color:#556; border-radius:20px; padding:.3rem .65rem; font-size:.78rem; cursor:pointer; }
+    .mk-chip.active { background:#c0392b; border-color:#c0392b; color:#fff; font-weight:bold; }
+    .mk-chip:disabled { opacity:.35; cursor:default; text-decoration:line-through; }
+    .mk-ex { border-left:4px solid #c0392b; }
+    .mk-ex-head { display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem; }
+    .mk-num { background:#c0392b; color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0; }
+    .mk-ex-head h4 { margin:0; font-size:1rem; color:var(--primary-color); }
+    .mk-ex-head .var { font-size:.78rem; color:#778; }
+    .mk-img { width:100%; max-height:240px; object-fit:contain; background:#f4f6f8; border-radius:8px; margin:.5rem 0; cursor:zoom-in; display:block; }
+    .mk-noimg { background:#f4f6f8; border:2px dashed #ccd5dd; border-radius:8px; padding:1.4rem .8rem; text-align:center; color:#889; font-size:.8rem; margin:.5rem 0; }
+    .mk-noimg .big { font-size:2rem; display:block; }
+    .mk-presc { background:#fff5f2; border-radius:8px; padding:.5rem .7rem; font-size:.82rem; color:#7b1e1e; margin:.4rem 0; }
+    .mk-super { background:#fff3cd; color:#7a5b00; border-radius:8px; padding:.45rem .7rem; font-size:.8rem; margin:.4rem 0; font-weight:bold; }
+    .mk-tip, .mk-last { font-size:.8rem; color:#556; margin:.3rem 0; }
+    .mk-ok { color:#27ae60; font-weight:bold; font-size:.82rem; }
+    .mk-user { margin:.5rem 0; }
+    .mk-user img, .mk-user video { width:100%; max-height:260px; object-fit:contain; background:#000; border-radius:8px; display:block; }
+    .mk-user img { background:#f4f6f8; cursor:zoom-in; }
+    .mk-mediabtns { display:flex; gap:.4rem; flex-wrap:wrap; margin:.2rem 0 .4rem; }
+    .mk-mediabtns .btn { flex:1 1 auto; }
+    .mk-noimg .btn { margin-top:.6rem; }
+    #mk-lightbox { position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:1200; display:none; flex-direction:column; align-items:center; justify-content:center; padding:1rem; }
+    #mk-lightbox.open { display:flex; }
+    #mk-lightbox img { max-width:100%; max-height:80vh; border-radius:8px; background:#fff; }
+    #mk-lightbox p { color:#fff; margin-top:.6rem; font-weight:bold; text-align:center; }
+</style>
+<script>
+(function(){
+    "use strict";
+    function $(id){ return document.getElementById(id); }
+    function get(k, d){ try { var v = localStorage.getItem('gym_' + k); return v ? JSON.parse(v) : d; } catch(e){ return d; } }
+    function set(k, v){ try { localStorage.setItem('gym_' + k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+    function hoyISO(){ return new Date().toISOString().slice(0, 10); }
+    function fFecha(iso){ var p = iso.split('-'); return p[2] + '/' + p[1]; }
+    function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function r25(n){ return Math.round(n / 2.5) * 2.5; }
+    function aviso(msg){ var t = $('toast'); if (!t) return; t.textContent = msg; t.classList.add('show'); clearTimeout(t._tm); t._tm = setTimeout(function(){ t.classList.remove('show'); }, 2600); }
+
+    // Imágenes que la app todavía no tiene (máquinas, gemelos): se suben a GitHub en
+    // img/mike/<archivo>.webp y aparecen solas. Si no existen, se ve "imagen pendiente".
+    var IMG_REMOTA = 'https://raw.githubusercontent.com/ricardochaj/GymApp/main/img/mike/';
+
+    // Nombre del ejercicio en la guía -> su imagen (se lee del propio HTML de la app).
+    var IMGS = {};
+    document.querySelectorAll('.exercise-item').forEach(function(it){
+        var h = it.querySelector('h4'), im = it.querySelector('img');
+        if (h && im && !IMGS[h.textContent.trim()]) IMGS[h.textContent.trim()] = im.getAttribute('src');
+    });
+
+    var EQUIPOS = [['maquina','🏭 Máquina'],['polea','🔗 Polea'],['mancuernas','💪 Mancuernas'],['barra','🏋️ Barra']];
+
+    // v.n = nombre (se registra con ese nombre); v.f = imagen pendiente en GitHub; v.alt = ejercicio sustituto
+    var DIAS = [
+      { id:'A', nombre:'Pecho + Espalda', ico:'💪', ej:[
+        { id:'pecdeck', t:'Pec Deck (aperturas)', reps:'6-10', superset:true,
+          tip:'Codos apenas flexionados y fijos. Apretá el pecho 1 segundo al cerrar.',
+          v:{ maquina:{n:'Pec Deck (máquina)', f:'pec-deck'}, polea:{n:'Aperturas en Polea (Crossovers)'}, mancuernas:{n:'Aperturas con Mancuernas'} } },
+        { id:'pressinc', t:'Press inclinado', reps:'6-10',
+          tip:'Banco a 30-45°. Bajá controlado hasta el pecho alto, sin rebotar.',
+          v:{ maquina:{n:'Press inclinado en máquina', f:'press-inclinado-maquina'}, polea:{n:'Press Inclinado en Polea'}, mancuernas:{n:'Press Inclinado con Mancuernas'}, barra:{n:'Press de Banca Inclinado'} } },
+        { id:'jalon', t:'Jalón al pecho', reps:'6-10',
+          tip:'Pecho arriba; llevá la barra a la clavícula tirando con los codos, no con las manos.',
+          v:{ maquina:{n:'Jalón en máquina', f:'jalon-maquina'}, polea:{n:'Jalón al Pecho'}, mancuernas:{n:'Pull-over con Mancuerna', alt:true}, barra:{n:'Pullover con Barra', alt:true} } },
+        { id:'remo', t:'Remo', reps:'6-10',
+          tip:'Espalda neutra. Llevá los codos atrás y juntá los omóplatos al final.',
+          v:{ maquina:{n:'Remo en máquina', f:'remo-maquina'}, polea:{n:'Remo en Polea Baja'}, mancuernas:{n:'Remo con Mancuerna a una Mano'}, barra:{n:'Remo con Barra'} } }
+      ]},
+      { id:'B', nombre:'Piernas', ico:'🦵', ej:[
+        { id:'extcuad', t:'Extensión de cuádriceps', reps:'8-15', superset:true,
+          tip:'Subí controlado y sostené 1 segundo arriba con la pierna estirada.',
+          v:{ maquina:{n:'Extensión de cuádriceps (máquina)', f:'extension-cuadriceps'}, polea:{n:'Extensión de Cuádriceps en Polea'} } },
+        { id:'prensa', t:'Prensa / sentadilla', reps:'8-15',
+          tip:'Bajá hasta donde mantengas la espalda neutra. No bloquees las rodillas arriba.',
+          v:{ maquina:{n:'Prensa de piernas', f:'prensa'}, polea:{n:'Sentadilla Asistida con Polea'}, mancuernas:{n:'Sentadilla Goblet (Copa)'}, barra:{n:'Sentadilla Trasera (Back Squat)'} } },
+        { id:'femoral', t:'Curl femoral', reps:'8-15',
+          tip:'Cadera pegada al banco. Bajá lento, que es donde más trabaja.',
+          v:{ maquina:{n:'Curl femoral (máquina)', f:'curl-femoral-maquina'}, polea:{n:'Curl Femoral en Polea'}, mancuernas:{n:'Peso Muerto Rumano con Mancuernas', alt:true}, barra:{n:'Peso Muerto Rumano', alt:true} } },
+        { id:'gemelos', t:'Gemelos', reps:'8-15',
+          tip:'Rango completo: estirá bien abajo y subí en puntas de pie, pausa de 1 segundo arriba.',
+          v:{ maquina:{n:'Gemelos en máquina', f:'gemelos-maquina'}, mancuernas:{n:'Gemelos de pie con mancuernas', f:'gemelos-mancuernas'}, barra:{n:'Gemelos con barra', f:'gemelos-barra'} } }
+      ]},
+      { id:'C', nombre:'Hombros + Brazos', ico:'🎯', ej:[
+        { id:'laterales', t:'Elevaciones laterales', reps:'6-10', superset:true,
+          tip:'Subí hasta la altura del hombro con los codos levemente flexionados. Sin balanceo.',
+          v:{ maquina:{n:'Elevaciones laterales en máquina', f:'laterales-maquina'}, polea:{n:'Elevaciones Laterales en Polea'}, mancuernas:{n:'Elevaciones Laterales'}, barra:{n:'Remo Alto Ancho', alt:true} } },
+        { id:'presshombro', t:'Press hombros', reps:'6-10',
+          tip:'Core firme, sin arquear la espalda. Bajá hasta la altura de las orejas.',
+          v:{ maquina:{n:'Press de hombros en máquina', f:'press-hombros-maquina'}, polea:{n:'Press Militar en Polea'}, mancuernas:{n:'Press Militar con Mancuernas'}, barra:{n:'Press Militar Sentado'} } },
+        { id:'biceps', t:'Curl bíceps', reps:'6-10',
+          tip:'Codos quietos al costado del cuerpo. Bajá lento, sin balancear el torso.',
+          v:{ maquina:{n:'Curl de bíceps en máquina', f:'curl-biceps-maquina'}, polea:{n:'Curl en Polea Baja'}, mancuernas:{n:'Curl con Mancuernas Tradicional'}, barra:{n:'Curl con Barra Recta'} } },
+        { id:'triceps', t:'Tríceps polea / fondos', reps:'6-10',
+          tip:'Codos pegados y fijos; solo se mueve el antebrazo. Extendé del todo.',
+          v:{ maquina:{n:'Fondos en máquina', f:'fondos-maquina'}, polea:{n:'Extensión de Tríceps con Cuerda'}, mancuernas:{n:'Extensión de Tríceps sobre la Cabeza'}, barra:{n:'Press Francés con Barra Z'} } }
+      ]}
+    ];
+
+    var st = { dia: null };
+
+    function prefs(){ var p = get('mike_prefs', null) || {}; p.equipo = p.equipo || 'polea'; p.porEj = p.porEj || {}; return p; }
+    function hist(){ return get('mike_hist', []); }
+    function logsDe(n){ return (get('logs', {})[n]) || []; }
+
+    function proximoDia(){
+        var h = hist();
+        if (!h.length) return 'A';
+        var ult = h[h.length - 1].dia, i = DIAS.findIndex(function(d){ return d.id === ult; });
+        return DIAS[(i + 1) % DIAS.length].id;
+    }
+    function diasDesde(){
+        var h = hist(); if (!h.length) return null;
+        return Math.round((new Date(hoyISO()) - new Date(h[h.length - 1].fecha)) / 86400000);
+    }
+
+    function equipoDe(ej){
+        var p = prefs(), elegido = p.porEj[ej.id] || p.equipo;
+        var orden = [elegido, 'polea', 'mancuernas', 'maquina', 'barra'];
+        for (var i = 0; i < orden.length; i++) if (ej.v[orden[i]]) return orden[i];
+    }
+
+    function userMedia(){ return get('mike_media', {}); }
+    function pendiente(n){
+        return '<div class="mk-noimg"><span class="big">🖼️</span>Todavía no hay imagen para <strong>' + esc(n) + '</strong>.'
+            + '<br><button class="btn small mk-cargar" data-var="' + esc(n) + '">📷 Cargar foto o video</button></div>';
+    }
+    function imgHTML(v){
+        var um = userMedia()[v.n];
+        if (um) return '<div class="mk-user" data-mk="' + esc(um.mk) + '" data-mt="' + um.mt + '" data-nombre="' + esc(v.n) + '"></div>'
+            + '<div class="mk-mediabtns"><button class="btn ghost small mk-cargar" data-var="' + esc(v.n) + '">🔄 Cambiar foto/video</button>'
+            + '<button class="btn ghost small mk-quitar" data-var="' + esc(v.n) + '">🗑️ Quitar</button></div>';
+        var cargar = '<div class="mk-mediabtns"><button class="btn ghost small mk-cargar" data-var="' + esc(v.n) + '">📷 Usar mi foto o video</button></div>';
+        if (v.f) return '<img class="mk-img" src="' + IMG_REMOTA + v.f + '.webp" data-nombre="' + esc(v.n) + '" data-pend="1" alt="">' + cargar;
+        var src = IMGS[v.n];
+        return src ? '<img class="mk-img" src="' + esc(src) + '" data-nombre="' + esc(v.n) + '" alt="">' + cargar : pendiente(v.n);
+    }
+
+    function sugerencia(ej, l){
+        var prev = l.filter(function(x){ return x.fecha !== hoyISO(); });
+        if (!prev.length) return '<div class="mk-last">Primera vez: elegí un peso con el que llegues al fallo dentro de <strong>' + ej.reps + '</strong> reps.</div>';
+        var u = prev[prev.length - 1], rr = ej.reps.split('-'), piso = +rr[0], tope = +rr[1];
+        var txt = 'La vez pasada (' + fFecha(u.fecha) + '): <strong>' + u.peso + ' kg × ' + u.reps + '</strong>. ';
+        if (u.reps >= tope) txt += '📈 Llegaste al tope: probá <strong>' + r25(u.peso * 1.05) + ' kg</strong>.';
+        else if (u.reps < piso) txt += '⚖️ Quedaste corto: repetí el peso o bajá un poco.';
+        else txt += '🎯 Mismo peso y buscá <strong>1 rep más</strong>.';
+        return '<div class="mk-last">' + txt + '</div>';
+    }
+
+    function render(){
+        var root = $('mike-root'); if (!root) return;
+        var p = prefs(), toca = proximoDia(), dd = diasDesde();
+        if (!st.dia) st.dia = toca;
+        var dia = DIAS.find(function(d){ return d.id === st.dia; });
+        var hechoHoy = hist().some(function(h){ return h.fecha === hoyISO() && h.dia === dia.id; });
+        var h = '';
+
+        h += '<div class="card"><h3>📖 Cómo es el método</h3>'
+           + '<p style="font-size:.85rem;margin-bottom:.4rem">Inspirado en el <strong>Heavy Duty</strong> de Mike Mentzer: <strong>1 sola serie efectiva por ejercicio</strong>, llevada cerca del fallo con buena técnica. Más no es mejor: la clave es la intensidad.</p>'
+           + '<div class="log-row"><span>🔥 Antes: 1-2 series livianas de entrada en calor (no cuentan)</span></div>'
+           + '<div class="log-row"><span>🐢 Bajada lenta (3-4 s), subida controlada, sin rebotes</span></div>'
+           + '<div class="log-row"><span>⚡ Los ejercicios marcados van seguidos, sin descanso (pre-agotamiento)</span></div>'
+           + '<div class="log-row"><span>😴 Descansá varios días entre sesiones: se crece en el descanso</span></div>'
+           + '<p style="font-size:.72rem;color:#889;margin-top:.4rem">Elegí ejercicios que puedas hacer seguros hasta el fallo. En pesos libres pesados, mejor con alguien que te asista.</p></div>';
+
+        if (dd !== null){
+            h += '<div class="card" style="padding:.7rem 1rem;font-size:.85rem">'
+               + (dd === 0 ? '✅ Ya entrenaste hoy.' : dd < 3 ? '😴 Entrenaste hace ' + dd + ' día' + (dd > 1 ? 's' : '') + '. En este método conviene descansar un poco más.' : '💪 Último entrenamiento hace ' + dd + ' días. ¡Listo para darlo todo!')
+               + '</div>';
+        }
+
+        h += '<div class="mk-days">' + DIAS.map(function(d){
+            return '<div class="mk-day' + (d.id === st.dia ? ' active' : '') + '" data-dia="' + d.id + '">'
+                + (d.id === toca ? '<span class="toca">Te toca</span>' : '') + '<span class="ico">' + d.ico + '</span>' + d.nombre + '</div>';
+        }).join('') + '</div>';
+
+        h += '<div class="card" style="padding:.7rem 1rem"><p style="font-size:.78rem;font-weight:bold;color:#555;margin-bottom:.35rem">¿Con qué entrenás? (podés cambiarlo en cada ejercicio)</p><div class="mk-equip">'
+           + EQUIPOS.map(function(e){ return '<button class="mk-chip mk-eq-global' + (p.equipo === e[0] ? ' active' : '') + '" data-eq="' + e[0] + '">' + e[1] + '</button>'; }).join('')
+           + '</div></div>';
+
+        dia.ej.forEach(function(ej, i){
+            var eq = equipoDe(ej), v = ej.v[eq], l = logsDe(v.n);
+            var hoyReg = l.filter(function(x){ return x.fecha === hoyISO(); }).pop();
+            var ultimo = l.length ? l[l.length - 1] : null;
+            h += '<div class="card mk-ex">'
+               + '<div class="mk-ex-head"><span class="mk-num">' + (i + 1) + '</span><div><h4>' + ej.t + '</h4><span class="var">' + esc(v.n) + (v.alt ? ' · alternativa' : '') + '</span></div></div>'
+               + '<div class="mk-equip">' + EQUIPOS.map(function(e){
+                    return '<button class="mk-chip mk-eq-ej' + (eq === e[0] ? ' active' : '') + '" data-ej="' + ej.id + '" data-eq="' + e[0] + '"' + (ej.v[e[0]] ? '' : ' disabled') + '>' + e[1] + '</button>';
+                 }).join('') + '</div>'
+               + imgHTML(v)
+               + '<div class="mk-presc">🎯 <strong>1 serie al fallo</strong> · ' + ej.reps + ' reps · bajada lenta</div>'
+               + (ej.superset ? '<div class="mk-super">⚡ Al terminar pasá DIRECTO al ejercicio ' + (i + 2) + ', sin descansar.</div>' : '')
+               + '<div class="mk-tip">💡 ' + ej.tip + '</div>'
+               + sugerencia(ej, l)
+               + '<div class="form-row" style="margin-top:.5rem;align-items:flex-end">'
+               +   '<div class="form-group"><label>Peso (kg)</label><input type="number" step="0.5" min="0" class="mk-peso" value="' + (ultimo ? ultimo.peso : '') + '"></div>'
+               +   '<div class="form-group"><label>Reps al fallo</label><input type="number" step="1" min="1" max="40" class="mk-reps" value="' + (hoyReg ? hoyReg.reps : '') + '"></div>'
+               +   '<div class="form-group" style="flex:0 0 auto"><button class="btn green mk-guardar" data-ej="' + ej.id + '">' + (hoyReg ? '✔ Corregir' : 'Guardar') + '</button></div>'
+               + '</div>'
+               + (hoyReg ? '<div class="mk-ok">✅ Registrado hoy: ' + hoyReg.peso + ' kg × ' + hoyReg.reps + '</div>' : '')
+               + '</div>';
+        });
+
+        h += '<button class="btn block" id="mk-terminar" style="background:#c0392b;margin-bottom:1rem">' + (hechoHoy ? '✅ Entrenamiento de hoy completado' : '🏁 Terminé el entrenamiento') + '</button>';
+
+        var hs = hist().slice(-6).reverse();
+        if (hs.length){
+            h += '<div class="card"><h3>🗓️ Últimos entrenamientos</h3>' + hs.map(function(x){
+                var d = DIAS.find(function(y){ return y.id === x.dia; });
+                return '<div class="log-row"><span>' + (d ? d.ico + ' ' + d.nombre : x.dia) + '</span><span class="ld">' + fFecha(x.fecha) + '</span></div>';
+            }).join('') + '</div>';
+        }
+
+        root.innerHTML = h;
+
+        root.querySelectorAll('img[data-pend]').forEach(function(im){
+            im.addEventListener('error', function(){
+                var botones = im.nextElementSibling;
+                if (botones && botones.classList.contains('mk-mediabtns')) botones.remove();
+                var div = document.createElement('div'); div.innerHTML = pendiente(im.dataset.nombre);
+                im.replaceWith(div.firstChild);
+            });
+        });
+        var M = window._gymMedia;
+        root.querySelectorAll('.mk-user').forEach(function(el){
+            if (!M){ el.innerHTML = ''; return; }
+            M.url(el.dataset.mk).then(function(u){
+                if (!u){ el.innerHTML = '<div class="mk-noimg">⚠️ No se encontró el archivo guardado. Cargalo de nuevo.</div>'; return; }
+                el.innerHTML = el.dataset.mt === 'vid'
+                    ? '<video src="' + u + '" muted loop autoplay playsinline controls></video>'
+                    : '<img class="mk-img" src="' + u + '" data-nombre="' + el.dataset.nombre + '" alt="">';
+            });
+        });
+    }
+
+    function buscarEj(id){
+        for (var i = 0; i < DIAS.length; i++) for (var j = 0; j < DIAS[i].ej.length; j++) if (DIAS[i].ej[j].id === id) return DIAS[i].ej[j];
+    }
+
+    function guardar(btn){
+        var card = btn.closest('.mk-ex'), ej = buscarEj(btn.dataset.ej), v = ej.v[equipoDe(ej)];
+        var peso = parseFloat(card.querySelector('.mk-peso').value), reps = parseInt(card.querySelector('.mk-reps').value, 10);
+        if (isNaN(peso) || peso < 0 || !reps){ aviso('Poné el peso y las repeticiones'); return; }
+        var logs = get('logs', {}), lista = logs[v.n] || [], hoy = hoyISO();
+        // Una sola serie por día: si ya había una de hoy (de este módulo), se corrige.
+        var corrige = lista.length && lista[lista.length - 1].fecha === hoy && lista[lista.length - 1].mike;
+        if (corrige) lista.pop();
+        var pr = lista.length ? Math.max.apply(null, lista.map(function(x){ return +x.peso || 0; })) : 0;
+        lista.push({ fecha: hoy, peso: peso, series: 1, reps: reps, feel: 'falle', mike: true });
+        logs[v.n] = lista;
+        if (!set('logs', logs)){ aviso('⚠️ No se pudo guardar (memoria llena)'); return; }
+        aviso(lista.length > 1 && peso > pr ? '🏆 ¡Nuevo récord en ' + v.n + '!' : (corrige ? '✔ Corregido' : '💪 Serie guardada'));
+        render();
+    }
+
+    function cargarMedia(nombre){
+        var M = window._gymMedia;
+        if (!M){ aviso('⚠️ No se puede cargar archivos en esta versión'); return; }
+        M.pedir(function(m){
+            var mk = 'mike_' + Date.now();   // id nuevo cada vez (la app cachea las URLs por id)
+            M.put(mk, { blob: m.blob, mt: m.mt }).then(function(){
+                var todo = userMedia(), viejo = todo[nombre];
+                todo[nombre] = { mk: mk, mt: m.mt };
+                set('mike_media', todo);
+                if (viejo) M.del(viejo.mk);
+                aviso(m.mt === 'vid' ? '🎬 Video guardado' : '📷 Foto guardada');
+                render();
+            }).catch(function(){ aviso('⚠️ No se pudo guardar el archivo (¿memoria llena?)'); });
+        });
+    }
+    function quitarMedia(nombre){
+        if (!confirm('¿Quitar tu foto/video de "' + nombre + '"?')) return;
+        var todo = userMedia(), viejo = todo[nombre];
+        delete todo[nombre];
+        set('mike_media', todo);
+        if (viejo && window._gymMedia) window._gymMedia.del(viejo.mk);
+        render();
+    }
+
+    function terminar(){
+        var dia = st.dia, hoy = hoyISO(), h = hist();
+        if (h.some(function(x){ return x.fecha === hoy && x.dia === dia; })){ aviso('Ya estaba registrado hoy 👍'); return; }
+        var d = DIAS.find(function(x){ return x.id === dia; });
+        var hechos = d.ej.filter(function(ej){ return logsDe(ej.v[equipoDe(ej)].n).some(function(x){ return x.fecha === hoy; }); }).length;
+        if (!hechos && !confirm('No guardaste ninguna serie. ¿Marcar igual el entrenamiento como hecho?')) return;
+        h.push({ fecha: hoy, dia: dia, ejercicios: hechos });
+        set('mike_hist', h);
+        aviso('🔥 ¡' + d.nombre + ' completado! Ahora a descansar.');
+        st.dia = null;
+        render();
+        window.scrollTo(0, 0);
+    }
+
+    $('mk-lightbox').addEventListener('click', function(){ this.classList.remove('open'); });
+
+    document.addEventListener('click', function(e){
+        var t = e.target;
+        if (!t.closest || !t.closest('#view-mike')) return;
+        var dia = t.closest('.mk-day');
+        if (dia){ st.dia = dia.dataset.dia; render(); return; }
+        if (t.classList.contains('mk-eq-global')){
+            var p = prefs(); p.equipo = t.dataset.eq; p.porEj = {}; set('mike_prefs', p); render(); return;
+        }
+        if (t.classList.contains('mk-eq-ej') && !t.disabled){
+            var p2 = prefs(); p2.porEj[t.dataset.ej] = t.dataset.eq; set('mike_prefs', p2); render(); return;
+        }
+        if (t.classList.contains('mk-guardar')){ guardar(t); return; }
+        if (t.classList.contains('mk-cargar')){ cargarMedia(t.dataset.var); return; }
+        if (t.classList.contains('mk-quitar')){ quitarMedia(t.dataset.var); return; }
+        if (t.id === 'mk-terminar'){ terminar(); return; }
+        if (t.classList.contains('mk-img')){
+            var lb = $('mk-lightbox'); lb.querySelector('img').src = t.src; lb.querySelector('p').textContent = t.dataset.nombre || '';
+            lb.classList.add('open');
+        }
+    });
+
+    var ini = $('inicio-mike');
+    if (ini) ini.addEventListener('click', function(){
+        $('inicio-dia').classList.remove('open');
+        var nav = document.querySelector('.nav-btn[data-view="mike"]'); if (nav) nav.click();
+    });
+
+    window._mikeRender = render;
+})();
+</script>
+
 <!-- ============ v1.0.1: NOVEDADES + CALCULADORA 1RM / DISCOS ============ -->
 <div class="modal-back" id="novedades-modal" style="align-items:center;z-index:1050">
     <div class="modal-card" style="border-radius:16px;margin:1rem">
         <button class="modal-close" data-close="novedades-modal">✕</button>
-        <h3>🆕 Novedades — versión 1.0.1</h3>
+        <h3>🆕 Novedades — versión 1.0.2</h3>
         <p style="font-size:.9rem;color:#556;margin-bottom:.6rem">¡La app se actualizó sola! Esto es lo nuevo:</p>
-        <div class="log-row"><span>🧮 <strong>Calculadora de 1RM</strong>: estimá tu máximo y con qué peso trabajar según tu objetivo.</span></div>
-        <div class="log-row"><span>🏋️ <strong>Calculadora de discos</strong>: qué discos poner de cada lado de la barra.</span></div>
-        <p style="font-size:.8rem;color:#889;margin:.6rem 0">Las encontrás en <strong>📈 Progreso</strong>.</p>
+        <div class="log-row"><span>🔥 <strong>Nuevo módulo Estilo Mike</strong>: rutina Heavy Duty inspirada en Mike Mentzer — 3 días, 1 serie al fallo por ejercicio.</span></div>
+        <div class="log-row"><span>🏭 Elegí <strong>máquina, polea, mancuernas o barra</strong> en cada ejercicio, con su imagen.</span></div>
+        <div class="log-row"><span>📷 Cargá <strong>tu propia foto o video</strong> en cualquier ejercicio (por ejemplo, la máquina de tu gimnasio).</span></div>
+        <div class="log-row"><span>📈 Registra tus series y te dice cuándo subir el peso.</span></div>
+        <div class="log-row"><span>🧮 (1.0.1) Calculadora de 1RM y de discos en <strong>📈 Progreso</strong>.</span></div>
+        <p style="font-size:.8rem;color:#889;margin:.6rem 0">Lo encontrás en el botón <strong>🔥 Mike</strong> de abajo.</p>
         <div class="btn-row">
             <button class="btn green" id="nov-ir">Probar ahora</button>
             <button class="btn ghost" data-close="novedades-modal">Cerrar</button>
@@ -5702,7 +6054,7 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 <script>
 (function(){
     "use strict";
-    var NOVEDADES_VERSION = "1.0.1";
+    var NOVEDADES_VERSION = "1.0.2";
 
     function $(id){ return document.getElementById(id); }
     function logs(){ try { return JSON.parse(localStorage.getItem('gym_logs')) || {}; } catch(e){ return {}; } }
@@ -5793,9 +6145,8 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 
     $('nov-ir').addEventListener('click', function(){
         $('novedades-modal').classList.remove('open');
-        var nav = document.querySelector('.nav-btn[data-view="progreso"]');
+        var nav = document.querySelector('.nav-btn[data-view="mike"]');
         if (nav) nav.click();
-        setTimeout(function(){ $('card-calc1rm').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 250);
     });
     document.querySelectorAll('#novedades-modal [data-close]').forEach(function(b){
         b.addEventListener('click', function(){ $('novedades-modal').classList.remove('open'); });
