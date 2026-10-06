@@ -692,6 +692,27 @@
         }
         .ex-ocultar-btn:active { background: rgba(231,76,60,.6); color: #fff; }
         .ex-oculto { display: none !important; }
+
+        /* v1.0.3: vista por músculo + qué músculos entrené */
+        .vista-modo { display:flex; justify-content:center; gap:0; margin:1.2rem auto 0; max-width:340px; background:#e8edf1; border-radius:24px; padding:4px; }
+        .vm-btn { flex:1; border:none; background:none; padding:.55rem .8rem; border-radius:20px; font-weight:bold; color:var(--primary-color); cursor:pointer; font-size:.9rem; }
+        .vm-btn.active { background:var(--primary-color); color:#fff; }
+        #musc-selection { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:.5rem; margin:1rem 0; }
+        .musc-btn { background:var(--secondary-color); color:#fff; border:none; padding:.6rem .4rem; border-radius:6px; cursor:pointer; font-size:.85rem; font-weight:bold; min-width:0; display:flex; flex-direction:column; align-items:center; gap:2px; }
+        .musc-btn small { font-weight:normal; font-size:.68rem; opacity:.9; }
+        .musc-btn.active { background:var(--accent-color); }
+        .mu-resumen { background:#fff; border-radius:10px; padding:1rem; box-shadow:0 2px 8px rgba(0,0,0,.08); margin-top:1rem; }
+        .mu-resumen h3 { color:var(--primary-color); font-size:1.05rem; margin-bottom:.2rem; }
+        .mu-sub { font-size:.75rem; color:#778; margin-bottom:.6rem; }
+        .mu-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(98px,1fr)); gap:.45rem; }
+        .mu-cell { border-radius:8px; padding:.45rem .4rem; text-align:center; font-size:.72rem; color:#445; background:#f1f3f5; border:2px solid transparent; cursor:pointer; display:flex; flex-direction:column; gap:1px; }
+        .mu-cell strong { font-size:.8rem; color:var(--primary-color); }
+        .mu-cell.reciente { background:#fff3e0; border-color:#f0a35e; }
+        .mu-cell.ok { background:#e8f8ef; border-color:#58c38a; }
+        .mu-cell.pendiente { background:#fdecea; border-color:#e88b80; }
+        .mu-cell .mu-n { color:#667; font-size:.66rem; }
+        .mu-ley { display:flex; flex-wrap:wrap; gap:.6rem; font-size:.68rem; color:#667; margin-top:.5rem; }
+        .mu-ley i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:3px; vertical-align:-1px; }
         .exo-abrir { margin-top: .8rem; }
         #exo-lista .log-row { gap: 8px; }
         #exo-buscar { width: 100%; }
@@ -705,7 +726,16 @@
     </header>
     
     <div class="container">
-        <div class="muscle-selection">
+        <div class="vista-modo">
+            <button class="vm-btn active" data-modo="grupo">Por grupo</button>
+            <button class="vm-btn" data-modo="musculo">Por músculo</button>
+        </div>
+        <div id="musc-panel" style="display:none">
+            <div id="musc-resumen"></div>
+            <div class="muscle-selection" id="musc-selection"></div>
+            <div id="musculo-view" class="exercises-container"></div>
+        </div>
+        <div class="muscle-selection" id="grupo-selection">
             <button class="muscle-btn warmup-btn" data-muscle="calentamiento">Entrada en Calor</button>
             <button class="muscle-btn" data-muscle="pecho">Pecho</button>
             <button class="muscle-btn" data-muscle="hombros">Hombros</button>
@@ -730,7 +760,7 @@
                     <div class="exercise-item warmup-item">
                         <h4>Bicicleta Fija</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_001.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_001.webp"/></p>
                         </div>
                         <p><strong>Duración:</strong> 5-10 minutos</p>
                         <p><strong>Intensidad:</strong> Moderada, manteniendo un ritmo constante</p>
@@ -743,7 +773,7 @@
                     <div class="exercise-item warmup-item">
                         <h4>Cinta de Correr (Máquina de Correr)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_002.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_002.webp"/></p>
                         </div>
                         <p><strong>Duración:</strong> 5-10 minutos</p>
                         <p><strong>Intensidad:</strong> Comienza caminando y aumenta gradualmente a trote suave</p>
@@ -756,7 +786,7 @@
                     <div class="exercise-item warmup-item">
                         <h4>Elíptica</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_003.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_003.webp"/></p>
                         </div>
                         <p><strong>Duración:</strong> 5-10 minutos</p>
                         <p><strong>Intensidad:</strong> Ritmo constante y cómodo</p>
@@ -775,7 +805,7 @@
                     <div class="exercise-item warmup-item">
                         <h4>Abdominales Cruzados</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_004.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_004.webp"/></p>
                         </div>
                         <p><strong>Series:</strong> 2 series de 15-20 repeticiones</p>
                         <p><strong>Ejecución:</strong> Acostado boca arriba, levanta el torso flexionando el abdomen</p>
@@ -788,7 +818,7 @@
                     <div class="exercise-item warmup-item">
                         <h4>Espinales (Extensiones de Espalda)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_005.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_005.webp"/></p>
                         </div>
                         <p><strong>Series:</strong> 2 series de 12-15 repeticiones</p>
                         <p><strong>Ejecución:</strong> En máquina de espinales o en el suelo, extiende la espalda hacia atrás</p>
@@ -801,7 +831,7 @@
                     <div class="exercise-item warmup-item">
                         <h4>Rotaciones de Hombros</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_006.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_006.webp"/></p>
                         </div>
                         <p><strong>Series:</strong> 2 series de 10 repeticiones en cada dirección</p>
                         <p><strong>Ejecución:</strong> Brazos extendidos, realiza círculos hacia adelante y hacia atrás</p>
@@ -833,7 +863,7 @@
                     <div class="exercise-item">
                         <h4>Press de Banca con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_007.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_007.webp"/></p>
                         </div>
                         <p>Acostado en un banco plano, empuja las mancuernas hacia arriba hasta extender los brazos.</p>
                         <div class="exercise-info">
@@ -844,7 +874,7 @@
                     <div class="exercise-item">
                         <h4>Aperturas con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_008.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_008.webp"/></p>
                         </div>
                         <p>Acostado en un banco, abre los brazos con las mancuernas manteniendo una ligera flexión.</p>
                         <div class="exercise-info">
@@ -855,7 +885,7 @@
                     <div class="exercise-item">
                         <h4>Press Inclinado con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_009.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_009.webp"/></p>
                         </div>
                         <p>En un banco inclinado, realiza el mismo movimiento del press de banca con mancuernas.</p>
                         <div class="exercise-info">
@@ -866,7 +896,7 @@
                     <div class="exercise-item">
                         <h4>Press declinado con mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_010.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_010.webp"/></p>
                         </div>
                         <p>Acostado en un banco declinado, empuja las mancuernas hacia arriba hasta extender los brazos.</p>
                         <div class="exercise-info">
@@ -877,7 +907,7 @@
                     <div class="exercise-item">
                         <h4>Aperturas inclinadas con mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_011.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_011.jpg"/></p>
                         </div>
                         <p>En banco inclinado, abre los brazos con las mancuernas manteniendo una ligera flexión.</p>
                         <div class="exercise-info">
@@ -888,7 +918,7 @@
                     <div class="exercise-item">
                         <h4>Aperturas declinadas con mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_012.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_012.webp"/></p>
                         </div>
                         <p>En banco declinado, abre los brazos con las mancuernas manteniendo una ligera flexión.</p>
                         <div class="exercise-info">
@@ -899,7 +929,7 @@
                     <div class="exercise-item">
                         <h4>Pullover con mancuerna</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_013.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_013.webp"/></p>
                         </div>
                         <p>Acostado en un banco, lleva la mancuerna desde el pecho hacia atrás de la cabeza.</p>
                         <div class="exercise-info">
@@ -910,7 +940,7 @@
                     <div class="exercise-item">
                         <h4>Press cerrado con mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_014.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_014.webp"/></p>
                         </div>
                         <p>Acostado en un banco, junta las mancuernas y empuja hacia arriba.</p>
                         <div class="exercise-info">
@@ -921,7 +951,7 @@
                     <div class="exercise-item">
                         <h4>Press alternado con mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_015.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_015.webp"/></p>
                         </div>
                         <p>Acostado en un banco, empuja las mancuernas alternadamente hacia arriba.</p>
                         <div class="exercise-info">
@@ -932,7 +962,7 @@
                     <div class="exercise-item">
                         <h4>Press de martillo</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_016.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_016.webp"/></p>
                         </div>
                         <p>Acostado en un banco, empuja las mancuernas con agarre neutro hacia arriba.</p>
                         <div class="exercise-info">
@@ -943,7 +973,7 @@
                     <div class="exercise-item">
                         <h4>Floor press con mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_017.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_017.jpg"/></p>
                         </div>
                         <p>Acostado en el suelo, empuja las mancuernas hacia arriba hasta extender los brazos.</p>
                         <div class="exercise-info">
@@ -960,7 +990,7 @@
                     <div class="exercise-item">
                         <h4>Press de Banca Plano</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_018.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_018.webp"/></p>
                         </div>
                         <p>Acostado en un banco plano, baja la barra al pecho y luego empuja hacia arriba.</p>
                         <div class="exercise-info">
@@ -971,7 +1001,7 @@
                     <div class="exercise-item">
                         <h4>Press de Banca Inclinado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_019.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_019.webp"/></p>
                         </div>
                         <p>En un banco inclinado, realiza el press de banca para enfocar la parte superior del pecho.</p>
                         <div class="exercise-info">
@@ -982,7 +1012,7 @@
                     <div class="exercise-item">
                         <h4>Press de Banca Declinado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_020.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_020.webp"/></p>
                         </div>
                         <p>Acostado en un banco declinado, baja la barra al pecho y empuja hacia arriba.</p>
                         <div class="exercise-info">
@@ -993,7 +1023,7 @@
                     <div class="exercise-item">
                         <h4>Press Cerrado con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_021.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_021.webp"/></p>
                         </div>
                         <p>Acostado en banco plano, agarre estrecho para enfatizar tríceps y porción interna del pecho.</p>
                         <div class="exercise-info">
@@ -1004,7 +1034,7 @@
                     <div class="exercise-item">
                         <h4>Press con Agarre Ancho</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_022.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_022.webp"/></p>
                         </div>
                         <p>Acostado en banco plano, agarre más ancho para mayor énfasis en pectorales externos.</p>
                         <div class="exercise-info">
@@ -1015,7 +1045,7 @@
                     <div class="exercise-item">
                         <h4>Press al Pecho en el Piso (Floor Press)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_023.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_023.jpg"/></p>
                         </div>
                         <p>Acostado en el suelo, baja la barra hasta que los codos toquen el suelo y luego empuja.</p>
                         <div class="exercise-info">
@@ -1026,7 +1056,7 @@
                     <div class="exercise-item">
                         <h4>Pullover con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_024.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_024.webp"/></p>
                         </div>
                         <p>Acostado en banco, lleva la barra desde el pecho hacia atrás de la cabeza.</p>
                         <div class="exercise-info">
@@ -1037,7 +1067,7 @@
                     <div class="exercise-item">
                         <h4>Press con Pausa (Pausa en el Pecho)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_025.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_025.webp"/></p>
                         </div>
                         <p>Realiza press de banca con pausa de 1-2 segundos cuando la barra toque el pecho.</p>
                         <div class="exercise-info">
@@ -1054,7 +1084,7 @@
                     <div class="exercise-item">
                         <h4>Cruces en Polea Alta</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_026.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_026.webp"/></p>
                         </div>
                         <p>De pie entre dos poleas altas, junta las manos frente al cuerpo con un movimiento semicircular.</p>
                         <div class="exercise-info">
@@ -1065,7 +1095,7 @@
                     <div class="exercise-item">
                         <h4>Cruces en Polea Baja</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_027.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_027.webp"/></p>
                         </div>
                         <p>De pie entre dos poleas bajas, junta las manos por encima del pecho con movimiento ascendente.</p>
                         <div class="exercise-info">
@@ -1076,7 +1106,7 @@
                     <div class="exercise-item">
                         <h4>Aperturas en Polea (Crossovers)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_028.jpg"</p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_028.jpg"</p>
                         </div>
                         <p>De pie entre dos poleas, realiza aperturas manteniendo ligera flexión de codos.</p>
                         <div class="exercise-info">
@@ -1087,7 +1117,7 @@
                     <div class="exercise-item">
                         <h4>Press en Polea de Pie</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_029.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_029.jpg"/></p>
                         </div>
                         <p>De pie frente a polea, empuja el agarre hacia adelante como en press de pecho.</p>
                         <div class="exercise-info">
@@ -1098,7 +1128,7 @@
                     <div class="exercise-item">
                         <h4>Press en Polea Sentado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_030.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_030.webp"/></p>
                         </div>
                         <p>Sentado frente a polea, realiza press de pecho con polea a la altura del pecho.</p>
                         <div class="exercise-info">
@@ -1109,7 +1139,7 @@
                     <div class="exercise-item">
                         <h4>Aperturas en Polea a una Mano</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_031.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_031.webp"/></p>
                         </div>
                         <p>De pie frente a polea, realiza aperturas con un brazo a la vez para mayor concentración.</p>
                         <div class="exercise-info">
@@ -1120,7 +1150,7 @@
                     <div class="exercise-item">
                         <h4>Press Inclinado en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_032.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_032.webp"/></p>
                         </div>
                         <p>En banco inclinado, realiza press con poleas para enfocar parte superior del pecho.</p>
                         <div class="exercise-info">
@@ -1131,7 +1161,7 @@
                     <div class="exercise-item">
                         <h4>Press Declinado en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_033.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_033.webp"/></p>
                         </div>
                         <p>En banco declinado, realiza press con poleas para enfocar parte inferior del pecho.</p>
                         <div class="exercise-info">
@@ -1161,7 +1191,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_034.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_034.webp"/></p>
                         </div>
                         <p>Sentado o de pie, empuja las mancuernas hacia arriba desde la altura de los hombros.</p>
                         <div class="exercise-info">
@@ -1172,7 +1202,7 @@
                     <div class="exercise-item">
                         <h4>Press Arnold</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_035.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_035.webp"/></p>
                         </div>
                         <p>Sentado, comienza con las mancuernas frente a los hombros y gira al empujar hacia arriba.</p>
                         <div class="exercise-info">
@@ -1183,7 +1213,7 @@
                     <div class="exercise-item">
                         <h4>Elevaciones Laterales</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_036.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_036.webp"/></p>
                         </div>
                         <p>De pie, eleva las mancuernas lateralmente hasta la altura de los hombros.</p>
                         <div class="exercise-info">
@@ -1194,7 +1224,7 @@
                     <div class="exercise-item">
                         <h4>Elevaciones Frontales</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_037.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_037.webp"/></p>
                         </div>
                         <p>De pie, eleva las mancuernas hacia adelante hasta la altura de los hombros.</p>
                         <div class="exercise-info">
@@ -1205,7 +1235,7 @@
                     <div class="exercise-item">
                         <h4>Elevaciones Posteriores (Pájaros)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_038.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_038.webp"/></p>
                         </div>
                         <p>Inclinado hacia adelante, eleva las mancuernas lateralmente.</p>
                         <div class="exercise-info">
@@ -1216,7 +1246,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar Alternado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_039.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_039.webp"/></p>
                         </div>
                         <p>Sentado o de pie, empuja las mancuernas alternadamente hacia arriba.</p>
                         <div class="exercise-info">
@@ -1227,7 +1257,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar Neutro</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_040.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_040.webp"/></p>
                         </div>
                         <p>Sentado, empuja las mancuernas con agarre neutro (martillo) hacia arriba.</p>
                         <div class="exercise-info">
@@ -1238,7 +1268,7 @@
                     <div class="exercise-item">
                         <h4>Y-Raise con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_041.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_041.webp"/></p>
                         </div>
                         <p>Acostado boca abajo en banco inclinado, eleva las mancuernas formando una Y.</p>
                         <div class="exercise-info">
@@ -1249,7 +1279,7 @@
                     <div class="exercise-item">
                         <h4>L-Raise</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_042.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_042.webp"/></p>
                         </div>
                         <p>De pie, eleva las mancuernas formando una L (frontal + lateral combinado).</p>
                         <div class="exercise-info">
@@ -1266,7 +1296,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar con Barra desde Pecho</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_043.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_043.webp"/></p>
                         </div>
                         <p>De pie o sentado, empuja la barra desde el pecho hacia arriba extendiendo completamente los brazos.</p>
                         <div class="exercise-info">
@@ -1277,7 +1307,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar de Pie desde Hombros</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_044.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_044.webp"/></p>
                         </div>
                         <p>De pie, empuja la barra hacia arriba desde los hombros, usando piernas mínimamente.</p>
                         <div class="exercise-info">
@@ -1288,7 +1318,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar Sentado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_045.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_045.webp"/></p>
                         </div>
                         <p>Sentado en banco, empuja la barra hacia arriba, aislando mejor los hombros.</p>
                         <div class="exercise-info">
@@ -1299,7 +1329,7 @@
                     <div class="exercise-item">
                         <h4>Press Tras Nuca</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_046.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_046.webp"/></p>
                         </div>
                         <p>Sentado, baja la barra detrás de la cabeza (ejercicio que requiere precaución).</p>
                         <div class="exercise-info">
@@ -1310,7 +1340,7 @@
                     <div class="exercise-item">
                         <h4>Remo al Mentón con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_047.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_047.webp"/></p>
                         </div>
                         <p>De pie, tira de la barra hacia el mentón elevando los codos.</p>
                         <div class="exercise-info">
@@ -1321,7 +1351,7 @@
                     <div class="exercise-item">
                         <h4>Press Push Press</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_048.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_048.webp"/></p>
                         </div>
                         <p>De pie, usa impulso de piernas para ayudar a empujar la barra sobre la cabeza.</p>
                         <div class="exercise-info">
@@ -1332,7 +1362,7 @@
                     <div class="exercise-item">
                         <h4>Remo Alto Ancho</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_049.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_049.webp"/></p>
                         </div>
                         <p>De pie, tira de la barra hacia el pecho con agarre ancho, codos altos.</p>
                         <div class="exercise-info">
@@ -1349,7 +1379,7 @@
                     <div class="exercise-item">
                         <h4>Elevaciones Laterales en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_050.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_050.webp"/></p>
                         </div>
                         <p>De pie junto a polea baja, eleva el brazo lateralmente manteniendo ligera flexión.</p>
                         <div class="exercise-info">
@@ -1360,7 +1390,7 @@
                     <div class="exercise-item">
                         <h4>Elevaciones Frontales en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_051.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_051.webp"/></p>
                         </div>
                         <p>De pie de espaldas a polea, eleva el brazo hacia adelante con polea entre piernas.</p>
                         <div class="exercise-info">
@@ -1371,7 +1401,7 @@
                     <div class="exercise-item">
                         <h4>Elevaciones Posteriores (Pájaros) en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_052.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_052.webp"/></p>
                         </div>
                         <p>Inclinado frente a polea baja, eleva los brazos lateralmente con torso paralelo al suelo.</p>
                         <div class="exercise-info">
@@ -1382,7 +1412,7 @@
                     <div class="exercise-item">
                         <h4>Remo al Mentón con Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_053.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_053.webp"/></p>
                         </div>
                         <p>De pie frente a polea baja, tira del agarre hacia el mentón elevando codos.</p>
                         <div class="exercise-info">
@@ -1393,7 +1423,7 @@
                     <div class="exercise-item">
                         <h4>Face Pull</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_054.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_054.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, tira de la cuerda hacia la cara separando manos.</p>
                         <div class="exercise-info">
@@ -1404,7 +1434,7 @@
                     <div class="exercise-item">
                         <h4>Press Militar en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_055.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_055.webp"/></p>
                         </div>
                         <p>Sentado en banco bajo polea, empuja el agarre hacia arriba como press militar.</p>
                         <div class="exercise-info">
@@ -1415,7 +1445,7 @@
                     <div class="exercise-item">
                         <h4>Rotaciones Externas con Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_056.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_056.webp"/></p>
                         </div>
                         <p>De pie junto a polea, brazo pegado al cuerpo, gira externamente contra resistencia.</p>
                         <div class="exercise-info">
@@ -1426,7 +1456,7 @@
                     <div class="exercise-item">
                         <h4>Rotaciones Internas con Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_057.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_057.webp"/></p>
                         </div>
                         <p>De pie junto a polea, brazo pegado al cuerpo, gira internamente contra resistencia.</p>
                         <div class="exercise-info">
@@ -1456,7 +1486,7 @@
                     <div class="exercise-item">
                         <h4>Sentadillas con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_058.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_058.webp"/></p>
                         </div>
                         <p>Sujeta una mancuerna en cada mano y realiza el movimiento de sentadilla manteniendo la espalda recta.</p>
                         <div class="exercise-info">
@@ -1467,7 +1497,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Goblet (Copa)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_059.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_059.webp"/></p>
                         </div>
                         <p>Sujeta una mancuerna con ambas manos frente al pecho y realiza sentadilla.</p>
                         <div class="exercise-info">
@@ -1478,7 +1508,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Búlgara</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_060.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_060.webp"/></p>
                         </div>
                         <p>Con un pie apoyado en un banco detrás, realiza sentadilla con la pierna delantera.</p>
                         <div class="exercise-info">
@@ -1489,7 +1519,7 @@
                     <div class="exercise-item">
                         <h4>Zancadas con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_061.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_061.webp"/></p>
                         </div>
                         <p>Con mancuernas en las manos, da un paso adelante y baja la rodilla trasera hacia el suelo.</p>
                         <div class="exercise-info">
@@ -1500,7 +1530,7 @@
                     <div class="exercise-item">
                         <h4>Zancadas Atrás</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_062.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_062.webp"/></p>
                         </div>
                         <p>Con mancuernas, da un paso hacia atrás y baja la rodilla delantera.</p>
                         <div class="exercise-info">
@@ -1511,7 +1541,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Rumano con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_063.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_063.webp"/></p>
                         </div>
                         <p>Con mancuernas, flexiona la cadera manteniendo las piernas casi rectas.</p>
                         <div class="exercise-info">
@@ -1522,7 +1552,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Tradicional</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_064.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_064.webp"/></p>
                         </div>
                         <p>Con mancuernas, flexiona rodillas y cadera para levantar el peso del suelo.</p>
                         <div class="exercise-info">
@@ -1533,7 +1563,7 @@
                     <div class="exercise-item">
                         <h4>Step-ups con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_065.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_065.webp"/></p>
                         </div>
                         <p>Con mancuernas, sube a un banco o plataforma elevada alternando piernas.</p>
                         <div class="exercise-info">
@@ -1544,7 +1574,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Sumo con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_066.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_066.webp"/></p>
                         </div>
                         <p>Con piernas separadas y punta de pies hacia afuera, realiza sentadilla sosteniendo una mancuerna.</p>
                         <div class="exercise-info">
@@ -1555,7 +1585,7 @@
                     <div class="exercise-item">
                         <h4>Buenos Días con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_067.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_067.jpg"/></p>
                         </div>
                         <p>Con mancuernas en los hombros, flexiona la cadera manteniendo la espalda recta.</p>
                         <div class="exercise-info">
@@ -1572,7 +1602,7 @@
                     <div class="exercise-item">
                         <h4>Sentadillas con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_068.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_068.webp"/></p>
                         </div>
                         <p>Con la barra sobre los hombros, baja el cuerpo flexionando rodillas y cadera.</p>
                         <div class="exercise-info">
@@ -1583,7 +1613,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Trasera (Back Squat)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_069.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_069.webp"/></p>
                         </div>
                         <p>Barra sobre trapecios, descenso controlado manteniendo espalda neutra.</p>
                         <div class="exercise-info">
@@ -1594,7 +1624,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Frontal (Front Squat)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_070.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_070.webp"/></p>
                         </div>
                         <p>Barra apoyada en hombros delante, torso más vertical, mayor énfasis en cuádriceps.</p>
                         <div class="exercise-info">
@@ -1605,7 +1635,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Zercher</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_071.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_071.webp"/></p>
                         </div>
                         <p>Barra sostenida en el pliegue de los codos, excelente para core y cuádriceps.</p>
                         <div class="exercise-info">
@@ -1616,7 +1646,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla con Pausa</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_072.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_072.webp"/></p>
                         </div>
                         <p>Realiza sentadilla con pausa de 2-3 segundos en el punto más bajo.</p>
                         <div class="exercise-info">
@@ -1627,7 +1657,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_073.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_073.webp"/></p>
                         </div>
                         <p>Con la barra en el suelo, levántala manteniendo la espalda recta hasta quedar de pie.</p>
                         <div class="exercise-info">
@@ -1638,7 +1668,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Convencional</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_074.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_074.webp"/></p>
                         </div>
                         <p>Agarre a la altura de los hombros, cadera más alta que en sumo.</p>
                         <div class="exercise-info">
@@ -1649,7 +1679,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Sumo</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_075.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_075.webp"/></p>
                         </div>
                         <p>Piernas muy separadas, agarre estrecho, tronco más vertical.</p>
                         <div class="exercise-info">
@@ -1660,7 +1690,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Rumano</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_076.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_076.webp"/></p>
                         </div>
                         <p>Piernas casi rectas, flexión de cadera manteniendo espalda neutra.</p>
                         <div class="exercise-info">
@@ -1671,7 +1701,7 @@
                     <div class="exercise-item">
                         <h4>Zancadas con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Zancadas con Barra.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Zancadas con Barra.jpg"/></p>
                         </div>
                         <p>Barra en espalda, realiza zancadas alternando piernas.</p>
                         <div class="exercise-info">
@@ -1682,7 +1712,7 @@
                     <div class="exercise-item">
                         <h4>Buenos Días con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_078.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_078.webp"/></p>
                         </div>
                         <p>Barra en espalda, flexión de cadera manteniendo piernas semi-flexionadas.</p>
                         <div class="exercise-info">
@@ -1693,7 +1723,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Overhead</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_079.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_079.jpg"/></p>
                         </div>
                         <p>Barra sobre la cabeza, requiere gran movilidad y estabilidad.</p>
                         <div class="exercise-info">
@@ -1710,7 +1740,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Cuádriceps en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_080.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_080.webp"/></p>
                         </div>
                         <p>Sentado, correa en tobillo, extiende la pierna contra resistencia de polea.</p>
                         <div class="exercise-info">
@@ -1721,7 +1751,7 @@
                     <div class="exercise-item">
                         <h4>Curl Femoral en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Curl Femoral en Polea.gif"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Curl Femoral en Polea.gif"/></p>
                         </div>
                         <p>De pie, correa en tobillo, flexiona la pierna llevando talón hacia glúteo.</p>
                         <div class="exercise-info">
@@ -1732,7 +1762,7 @@
                     <div class="exercise-item">
                         <h4>Elevación de Glúteo en Polea (Kickback)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_082.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_082.webp"/></p>
                         </div>
                         <p>De pie, correa en tobillo, lleva la pierna extendida hacia atrás.</p>
                         <div class="exercise-info">
@@ -1743,7 +1773,7 @@
                     <div class="exercise-item">
                         <h4>Abducción de Cadera en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Aducción de Cadera en Polea.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Aducción de Cadera en Polea.webp"/></p>
                         </div>
                         <p>De pie, correa en tobillo, lleva la pierna lateralmente alejándola del cuerpo.</p>
                         <div class="exercise-info">
@@ -1754,7 +1784,7 @@
                     <div class="exercise-item">
                         <h4>Aducción de Cadera en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Abducción de Cadera en Polea.png"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Abducción de Cadera en Polea.png"/></p>
                         </div>
                         <p>De pie, correa en tobillo, cruza la pierna por delante del cuerpo.</p>
                         <div class="exercise-info">
@@ -1765,7 +1795,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Asistida con Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Sentadilla Asistida con Polea.gif"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Sentadilla Asistida con Polea.gif"/></p>
                         </div>
                         <p>Agarrando polea alta, realiza sentadilla usando polea como asistencia.</p>
                         <div class="exercise-info">
@@ -1776,7 +1806,7 @@
                     <div class="exercise-item">
                         <h4>Zancadas con Maquina Smith</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_086.png"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_086.png"/></p>
                         </div>
                         <p>Con polea baja sujeta a cintura, realiza zancadas con resistencia constante.</p>
                         <div class="exercise-info">
@@ -1787,7 +1817,7 @@
                     <div class="exercise-item">
                         <h4>Buenos Días con Maquina Smith</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_087.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_087.jpg"/></p>
                         </div>
                         <p>De pie frente a polea baja, barra en espalda, flexión de cadera manteniendo espalda recta.</p>
                         <div class="exercise-info">
@@ -1817,7 +1847,7 @@
                     <div class="exercise-item">
                         <h4>Remo con Mancuerna a una Mano</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_088.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_088.webp"/></p>
                         </div>
                         <p>Apoyando una mano y rodilla en un banco, tira de la mancuerna hacia el torso.</p>
                         <div class="exercise-info">
@@ -1828,7 +1858,7 @@
                     <div class="exercise-item">
                         <h4>Remo Inclinado con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_089.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_089.webp"/></p>
                         </div>
                         <p>Inclinado hacia adelante, tira de ambas mancuernas hacia el torso simultáneamente.</p>
                         <div class="exercise-info">
@@ -1839,7 +1869,7 @@
                     <div class="exercise-item">
                         <h4>Remo Tipo "Seal Row" en Banco</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_090.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_090.webp"/></p>
                         </div>
                         <p>Acostado boca abajo en un banco, tira de las mancuernas hacia el torso.</p>
                         <div class="exercise-info">
@@ -1850,7 +1880,7 @@
                     <div class="exercise-item">
                         <h4>Remo con Agarre Neutro</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_091.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_091.webp"/></p>
                         </div>
                         <p>Inclinado, tira de las mancuernas con agarre neutro (palmas enfrentadas) hacia los costados.</p>
                         <div class="exercise-info">
@@ -1861,7 +1891,7 @@
                     <div class="exercise-item">
                         <h4>Remo al Mentón con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_092.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_092.webp"/></p>
                         </div>
                         <p>De pie, tira de las mancuernas hacia el mentón elevando los codos.</p>
                         <div class="exercise-info">
@@ -1872,7 +1902,7 @@
                     <div class="exercise-item">
                         <h4>Pull-over con Mancuerna</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_093.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_093.webp"/></p>
                         </div>
                         <p>Acostado en un banco, lleva la mancuerna desde el pecho hacia atrás de la cabeza.</p>
                         <div class="exercise-info">
@@ -1883,7 +1913,7 @@
                     <div class="exercise-item">
                         <h4>Remo en Posición de Zancada</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_094.png"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_094.png"/></p>
                         </div>
                         <p>En posición de zancada, tira de las mancuernas hacia el torso.</p>
                         <div class="exercise-info">
@@ -1894,7 +1924,7 @@
                     <div class="exercise-item">
                         <h4>Remo "Kroc"</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_095.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_095.webp"/></p>
                         </div>
                         <p>Remo a una mano con peso pesado y alto número de repeticiones.</p>
                         <div class="exercise-info">
@@ -1911,7 +1941,7 @@
                     <div class="exercise-item">
                         <h4>Remo con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_096.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_096.webp"/></p>
                         </div>
                         <p>Inclinado hacia adelante, tira de la barra hacia el abdomen manteniendo la espalda recta.</p>
                         <div class="exercise-info">
@@ -1922,7 +1952,7 @@
                     <div class="exercise-item">
                         <h4>Remo Pendlay</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_097.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_097.webp"/></p>
                         </div>
                         <p>Remo con barra apoyada en el suelo entre cada repetición, tronco paralelo al suelo.</p>
                         <div class="exercise-info">
@@ -1933,7 +1963,7 @@
                     <div class="exercise-item">
                         <h4>Remo Yates</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_098.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_098.webp"/></p>
                         </div>
                         <p>Remo con tronco más erguido, agarre supino, barra hacia abdomen bajo.</p>
                         <div class="exercise-info">
@@ -1944,7 +1974,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Convencional</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_099.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_099.webp"/></p>
                         </div>
                         <p>Levantamiento completo desde el suelo, agarre a la altura de los hombros.</p>
                         <div class="exercise-info">
@@ -1955,7 +1985,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Sumo</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_100.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_100.webp"/></p>
                         </div>
                         <p>Piernas muy separadas, agarre estrecho, tronco más vertical.</p>
                         <div class="exercise-info">
@@ -1966,7 +1996,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto Rumano</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_101.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_101.webp"/></p>
                         </div>
                         <p>Flexión de cadera con piernas casi rectas, barra cerca del cuerpo.</p>
                         <div class="exercise-info">
@@ -1977,7 +2007,7 @@
                     <div class="exercise-item">
                         <h4>Buenos Días con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_102.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_102.webp"/></p>
                         </div>
                         <p>Barra en espalda, flexión de cadera manteniendo espalda recta.</p>
                         <div class="exercise-info">
@@ -1988,7 +2018,7 @@
                     <div class="exercise-item">
                         <h4>Remo con Barra T</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_103.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_103.webp"/></p>
                         </div>
                         <p>Barra en esquina o máquina T, remo con agarre neutro.</p>
                         <div class="exercise-info">
@@ -2005,7 +2035,7 @@
                     <div class="exercise-item">
                         <h4>Jalón al Pecho</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_104.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_104.webp"/></p>
                         </div>
                         <p>Sentado en la máquina de polea alta, tira de la barra hacia el pecho.</p>
                         <div class="exercise-info">
@@ -2016,7 +2046,7 @@
                     <div class="exercise-item">
                         <h4>Jalón Tras Nuca</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_105.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_105.webp"/></p>
                         </div>
                         <p>Sentado en polea alta, tira de la barra hacia atrás de la cabeza (ejercicio que requiere precaución).</p>
                         <div class="exercise-info">
@@ -2027,7 +2057,7 @@
                     <div class="exercise-item">
                         <h4>Remo en Polea Baja</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_106.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_106.webp"/></p>
                         </div>
                         <p>Sentado frente a la polea baja, tira del agarre hacia el abdomen.</p>
                         <div class="exercise-info">
@@ -2038,7 +2068,7 @@
                     <div class="exercise-item">
                         <h4>Remo en Polea Alta</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_107.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_107.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, tira del agarre hacia el pecho con torso inclinado.</p>
                         <div class="exercise-info">
@@ -2049,7 +2079,7 @@
                     <div class="exercise-item">
                         <h4>Remo a una Mano en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_108.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_108.webp"/></p>
                         </div>
                         <p>De pie frente a polea baja, tira del agarre con una mano hacia la cadera.</p>
                         <div class="exercise-info">
@@ -2060,7 +2090,7 @@
                     <div class="exercise-item">
                         <h4>Remo Sentado Agarre Cerrado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_109.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_109.webp"/></p>
                         </div>
                         <p>Sentado en polea, agarre estrecho, tira hacia el abdomen.</p>
                         <div class="exercise-info">
@@ -2071,7 +2101,7 @@
                     <div class="exercise-item">
                         <h4>Remo Tipo "Lat Focus"</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_110.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_110.webp"/></p>
                         </div>
                         <p>Sentado en polea, trayectoria baja hacia la cadera para máximo enfoque en dorsales.</p>
                         <div class="exercise-info">
@@ -2082,7 +2112,7 @@
                     <div class="exercise-item">
                         <h4>Pull-over con Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_111.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_111.webp"/></p>
                         </div>
                         <p>De Pie frente a polea alta, lleva el agarre desde arriba hacia abajo.</p>
                         <div class="exercise-info">
@@ -2112,7 +2142,7 @@
                     <div class="exercise-item">
                         <h4>Curl con Mancuernas Tradicional</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_112.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_112.webp"/></p>
                         </div>
                         <p>De pie, flexiona los codos levantando las mancuernas hacia los hombros.</p>
                         <div class="exercise-info">
@@ -2123,7 +2153,7 @@
                     <div class="exercise-item">
                         <h4>Curl Alternado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_113.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_113.webp"/></p>
                         </div>
                         <p>De pie, alterna la flexión de cada brazo con mancuernas.</p>
                         <div class="exercise-info">
@@ -2134,7 +2164,7 @@
                     <div class="exercise-item">
                         <h4>Curl Martillo</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_114.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_114.webp"/></p>
                         </div>
                         <p>De pie, flexiona los codos con agarre neutro (martillo).</p>
                         <div class="exercise-info">
@@ -2145,7 +2175,7 @@
                     <div class="exercise-item">
                         <h4>Curl Concentrado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_115.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_115.webp"/></p>
                         </div>
                         <p>Sentado, apoya el codo en el muslo interno y flexiona el brazo.</p>
                         <div class="exercise-info">
@@ -2156,7 +2186,7 @@
                     <div class="exercise-item">
                         <h4>Curl Inclinado en Banco</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_116.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_116.webp"/></p>
                         </div>
                         <p>Acostado en banco inclinado, flexiona los brazos con mancuernas.</p>
                         <div class="exercise-info">
@@ -2167,7 +2197,7 @@
                     <div class="exercise-item">
                         <h4>Curl de Arrastre (Drag Curl)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_117.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_117.webp"/></p>
                         </div>
                         <p>De pie, flexiona los brazos manteniendo los codos hacia atrás.</p>
                         <div class="exercise-info">
@@ -2178,7 +2208,7 @@
                     <div class="exercise-item">
                         <h4>Curl en Banco Predicador</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_118.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_118.webp"/></p>
                         </div>
                         <p>Sentado en banco predicador, flexiona los brazos con mancuernas.</p>
                         <div class="exercise-info">
@@ -2189,7 +2219,7 @@
                     <div class="exercise-item">
                         <h4>Curl Zottman</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_119.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_119.webp"/></p>
                         </div>
                         <p>Flexiona con supinación y extiende con pronación.</p>
                         <div class="exercise-info">
@@ -2205,7 +2235,7 @@
                     <div class="exercise-item">
                         <h4>Curl con Barra Recta</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_120.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_120.webp"/></p>
                         </div>
                         <p>De pie, flexiona los codos levantando la barra hacia los hombros.</p>
                         <div class="exercise-info">
@@ -2216,7 +2246,7 @@
                     <div class="exercise-item">
                         <h4>Curl con Barra Z</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_121.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_121.webp"/></p>
                         </div>
                         <p>De pie, flexiona los codos con barra Z, más amigable para las muñecas.</p>
                         <div class="exercise-info">
@@ -2227,7 +2257,7 @@
                     <div class="exercise-item">
                         <h4>Curl Invertido (Agarre Prono)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_122.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_122.webp"/></p>
                         </div>
                         <p>De pie, flexiona los codos con agarre prono (palmas hacia abajo).</p>
                         <div class="exercise-info">
@@ -2238,7 +2268,7 @@
                     <div class="exercise-item">
                         <h4>Curl de Arrastre (Drag Curl)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_123.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_123.webp"/></p>
                         </div>
                         <p>De pie, flexiona los codos manteniendo la barra cerca del cuerpo.</p>
                         <div class="exercise-info">
@@ -2249,7 +2279,7 @@
                     <div class="exercise-item">
                         <h4>Curl en Predicador con Barra Z</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_124.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_124.webp"/></p>
                         </div>
                         <p>Sentado en banco predicador, flexiona los codos con barra Z.</p>
                         <div class="exercise-info">
@@ -2265,7 +2295,7 @@
                     <div class="exercise-item">
                         <h4>Curl en Polea Baja</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_125.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_125.webp"/></p>
                         </div>
                         <p>De pie frente a polea baja, flexiona codos con barra recta o curva.</p>
                         <div class="exercise-info">
@@ -2276,7 +2306,7 @@
                     <div class="exercise-item">
                         <h4>Curl en Polea Alta</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_126.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_126.webp"/></p>
                         </div>
                         <p>De pie de espaldas a polea alta, flexiona codos con resistencia descendente.</p>
                         <div class="exercise-info">
@@ -2287,7 +2317,7 @@
                     <div class="exercise-item">
                         <h4>Curl en Polea a una Mano</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_127.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_127.webp"/></p>
                         </div>
                         <p>De pie frente a polea baja, flexiona codo con agarre individual.</p>
                         <div class="exercise-info">
@@ -2298,7 +2328,7 @@
                     <div class="exercise-item">
                         <h4>Curl Martillo con Cuerda</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_128.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_128.webp"/></p>
                         </div>
                         <p>De pie frente a polea baja, flexiona codos con agarre neutro (martillo).</p>
                         <div class="exercise-info">
@@ -2309,7 +2339,7 @@
                     <div class="exercise-item">
                         <h4>Curl Concentrado con Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_129.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_129.webp"/></p>
                         </div>
                         <p>Sentado, brazo apoyado en muslo, flexiona codo con polea baja.</p>
                         <div class="exercise-info">
@@ -2325,7 +2355,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Tríceps sobre la Cabeza</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_130.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_130.webp"/></p>
                         </div>
                         <p>Sentado o de pie, extiende el brazo por encima de la cabeza con una mancuerna.</p>
                         <div class="exercise-info">
@@ -2336,7 +2366,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Tríceps Acostado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_131.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_131.webp"/></p>
                         </div>
                         <p>Acostado en banco, extiende los brazos con mancuernas (tipo press francés).</p>
                         <div class="exercise-info">
@@ -2347,7 +2377,7 @@
                     <div class="exercise-item">
                         <h4>Patada de Tríceps (Kickback)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_132.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_132.webp"/></p>
                         </div>
                         <p>Inclinado, extiende el brazo hacia atrás con mancuerna.</p>
                         <div class="exercise-info">
@@ -2358,7 +2388,7 @@
                     <div class="exercise-item">
                         <h4>Press Cerrado con Mancuernas</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_007.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_007.webp"/></p>
                         </div>
                         <p>Acostado en banco, junta las mancuernas y empuja hacia arriba.</p>
                         <div class="exercise-info">
@@ -2369,7 +2399,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Tríceps Sentado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_133.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_133.webp"/></p>
                         </div>
                         <p>Sentado, extiende ambos brazos por encima de la cabeza con una mancuerna.</p>
                         <div class="exercise-info">
@@ -2380,7 +2410,7 @@
                     <div class="exercise-item">
                         <h4>Extensión Alternada en Banco Inclinado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_134.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_134.webp"/></p>
                         </div>
                         <p>Acostado en banco inclinado, extiende alternadamente los brazos con mancuernas.</p>
                         <div class="exercise-info">
@@ -2396,7 +2426,7 @@
                     <div class="exercise-item">
                         <h4>Press Francés con Barra Z</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_135.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_135.webp"/></p>
                         </div>
                         <p>Acostado en banco, baja la barra Z hacia la frente extendiendo codos.</p>
                         <div class="exercise-info">
@@ -2407,7 +2437,7 @@
                     <div class="exercise-item">
                         <h4>Extensiones de Tríceps Acostado (Skull Crushers)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_136.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_136.webp"/></p>
                         </div>
                         <p>Acostado en banco, baja la barra hacia la cabeza manteniendo codos fijos.</p>
                         <div class="exercise-info">
@@ -2418,7 +2448,7 @@
                     <div class="exercise-item">
                         <h4>Press Cerrado con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_137.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_137.webp"/></p>
                         </div>
                         <p>Acostado en banco, agarre estrecho, empuja la barra hacia arriba.</p>
                         <div class="exercise-info">
@@ -2429,7 +2459,7 @@
                     <div class="exercise-item">
                         <h4>Extensión Tras Nuca con Barra Z</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_138.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_138.webp"/></p>
                         </div>
                         <p>Sentado, extiende los brazos por encima de la cabeza con barra Z.</p>
                         <div class="exercise-info">
@@ -2440,7 +2470,7 @@
                     <div class="exercise-item">
                         <h4>Fondos en Banco con Barra en el Regazo</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_139.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_139.webp"/></p>
                         </div>
                         <p>Fondos en banco con barra en muslos para aumentar resistencia.</p>
                         <div class="exercise-info">
@@ -2456,7 +2486,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Tríceps con Cuerda</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_140.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_140.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, extiende codos separando cuerdas al final.</p>
                         <div class="exercise-info">
@@ -2467,7 +2497,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Tríceps en Barra Recta</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_141.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_141.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, extiende codos con barra recta.</p>
                         <div class="exercise-info">
@@ -2478,7 +2508,7 @@
                     <div class="exercise-item">
                         <h4>Extensión de Tríceps Invertida</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_142.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_142.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, agarre supino (palmas hacia arriba).</p>
                         <div class="exercise-info">
@@ -2489,7 +2519,7 @@
                     <div class="exercise-item">
                         <h4>Patada de Tríceps en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_143.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_143.webp"/></p>
                         </div>
                         <p>Inclinado, correa en mano, extiende brazo hacia atrás con polea baja.</p>
                         <div class="exercise-info">
@@ -2500,7 +2530,7 @@
                     <div class="exercise-item">
                         <h4>Extensión a una Mano en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_144.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_144.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, extiende codo con agarre individual.</p>
                         <div class="exercise-info">
@@ -2511,7 +2541,7 @@
                     <div class="exercise-item">
                         <h4>Press en Polea Agarre Cerrado</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_145.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_145.jpg"/></p>
                         </div>
                         <p>De pie frente a polea alta, agarre estrecho, empuje hacia abajo.</p>
                         <div class="exercise-info">
@@ -2540,7 +2570,7 @@
                     <div class="exercise-item">
                         <h4>Crunch Abdominal</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_146.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_146.webp"/></p>
                         </div>
                         <p>Acostado boca arriba, eleva el torso flexionando el abdomen.</p>
                         <div class="exercise-info">
@@ -2551,7 +2581,7 @@
                     <div class="exercise-item">
                         <h4>Plancha</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_147.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_147.webp"/></p>
                         </div>
                         <p>En posición de flexión pero apoyado en antebrazos, mantén el cuerpo recto.</p>
                         <div class="exercise-info">
@@ -2567,7 +2597,7 @@
                     <div class="exercise-item">
                         <h4>Buenos Días (Core + Zona Lumbar)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_148.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_148.webp"/></p>
                         </div>
                         <p>Barra en espalda, flexión de cadera activando core y zona lumbar.</p>
                         <div class="exercise-info">
@@ -2578,7 +2608,7 @@
                     <div class="exercise-item">
                         <h4>Roll-out con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_149.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_149.webp"/></p>
                         </div>
                         <p>Barra con discos, rueda hacia adelante y regresa activando core.</p>
                         <div class="exercise-info">
@@ -2589,7 +2619,7 @@
                     <div class="exercise-item">
                         <h4>Sentadilla Frontal (Core Activado)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_150.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_150.webp"/></p>
                         </div>
                         <p>Barra en hombros delante, core activado para mantener posición.</p>
                         <div class="exercise-info">
@@ -2600,7 +2630,7 @@
                     <div class="exercise-item">
                         <h4>Peso Muerto (Activación del Core)</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_151.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_151.webp"/></p>
                         </div>
                         <p>Levantamiento con barra activando core para estabilización.</p>
                         <div class="exercise-info">
@@ -2611,7 +2641,7 @@
                     <div class="exercise-item">
                         <h4>Overhead Walk</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_152.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_152.webp"/></p>
                         </div>
                         <p>Barra sobre la cabeza, caminar manteniendo estabilidad.</p>
                         <div class="exercise-info">
@@ -2622,7 +2652,7 @@
                     <div class="exercise-item">
                         <h4>Side Bend con Barra en Espalda</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_153.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_153.webp"/></p>
                         </div>
                         <p>Barra en espalda, flexiones laterales de tronco.</p>
                         <div class="exercise-info">
@@ -2633,7 +2663,7 @@
                     <div class="exercise-item">
                         <h4>Rotaciones de Tronco con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_154.jpg"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_154.jpg"/></p>
                         </div>
                         <p>Barra en espalda, rotaciones controladas de tronco.</p>
                         <div class="exercise-info">
@@ -2644,7 +2674,7 @@
                     <div class="exercise-item">
                         <h4>Press Pallof Improvisado con Barra</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Press Pallof Improvisado con Barra.png"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Press Pallof Improvisado con Barra.png"/></p>
                         </div>
                         <p>Barra anclada, empuje contra resistencia manteniendo core estable.</p>
                         <div class="exercise-info">
@@ -2660,7 +2690,7 @@
                     <div class="exercise-item">
                         <h4>Crunch en Polea Alta</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_155.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_155.webp"/></p>
                         </div>
                         <p>Arrodillado frente a polea alta, flexiona tronco llevando codos hacia muslos.</p>
                         <div class="exercise-info">
@@ -2671,7 +2701,7 @@
                     <div class="exercise-item">
                         <h4>Crunch de Rodillas con Cuerda</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_156.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_156.webp"/></p>
                         </div>
                         <p>Arrodillado frente a polea alta, flexión de tronco con cuerda tras nuca.</p>
                         <div class="exercise-info">
@@ -2682,7 +2712,7 @@
                     <div class="exercise-item">
                         <h4>Giro de Tronco en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_157.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_157.webp"/></p>
                         </div>
                         <p>De pie o sentado lateral a polea, giro de tronco contra resistencia.</p>
                         <div class="exercise-info">
@@ -2693,7 +2723,7 @@
                     <div class="exercise-item">
                         <h4>Pallof Press</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_158.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_158.webp"/></p>
                         </div>
                         <p>De pie lateral a polea, empuje de manos contra resistencia manteniendo core estable.</p>
                         <div class="exercise-info">
@@ -2704,7 +2734,7 @@
                     <div class="exercise-item">
                         <h4>Elevación Lateral de Tronco en Polea</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/Elevación Lateral de Tronco en Polea.gif"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/Elevación Lateral de Tronco en Polea.gif"/></p>
                         </div>
                         <p>De pie lateral a polea, flexión lateral de tronco.</p>
                         <div class="exercise-info">
@@ -2715,7 +2745,7 @@
                     <div class="exercise-item">
                         <h4>Encogimientos con Polea Baja</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_159.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_159.webp"/></p>
                         </div>
                         <p>Acostado, polea baja sujeta a tobillos, elevación de piernas con resistencia.</p>
                         <div class="exercise-info">
@@ -2726,7 +2756,7 @@
                     <div class="exercise-item">
                         <h4>Woodchopper Alto a Bajo</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_160.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_160.webp"/></p>
                         </div>
                         <p>De pie frente a polea alta, movimiento diagonal como cortar leña.</p>
                         <div class="exercise-info">
@@ -2737,7 +2767,7 @@
                     <div class="exercise-item">
                         <h4>Woodchopper Inverso Bajo a Alto</h4>
                         <div class="exercise-image">
-                            <p class="placeholder-text"><img src="assets/img/img_161.webp"/></p>
+                            <p class="placeholder-text"><img loading="lazy" decoding="async" src="assets/img/img_161.webp"/></p>
                         </div>
                         <p>De pie frente a polea baja, movimiento diagonal inverso.</p>
                         <div class="exercise-info">
@@ -2800,6 +2830,8 @@
             <h3>Resumen</h3>
             <div class="stat-grid" id="prog-stats"></div>
         </div>
+
+        <div id="card-musculos"></div>
 
         <div class="card">
             <h3>📊 Gráfico por ejercicio</h3>
@@ -4206,6 +4238,7 @@ function renderProgreso(){
 
     renderFotos();
     cargarMedidas();
+    pintarCardMusculos();
 }
 function dibujarChartEx(){
     const nm = document.getElementById('chart-ex').value;
@@ -4931,17 +4964,20 @@ function beep(){
     } catch(e){}
     if (navigator.vibrate) navigator.vibrate([300,150,300,150,500]);
 }
+let tFin = null;   // hora (ms) en que termina el descanso
+function tickTimer(){
+    tLeft = Math.max(0, Math.ceil((tFin - Date.now()) / 1000));
+    if (tLeft <= 0){
+        clearInterval(tInt); tInt = null; tFin = null;
+        beep(); toast('⏱️ ¡Descanso terminado, a la próxima serie! 💪');
+    }
+    pintarTimer();
+}
 function startTimer(){
     if (tInt) return;
     if (tLeft <= 0) tLeft = tSec;
-    tInt = setInterval(()=>{
-        tLeft--;
-        if (tLeft <= 0){
-            clearInterval(tInt); tInt = null; tLeft = 0;
-            beep(); toast('⏱️ ¡Descanso terminado, a la próxima serie! 💪');
-        }
-        pintarTimer();
-    }, 1000);
+    tFin = Date.now() + tLeft * 1000;
+    tInt = setInterval(tickTimer, 1000);
     pintarTimer();
 }
 fab.addEventListener('click', ()=>document.getElementById('timer-overlay').classList.add('open'));
@@ -5679,11 +5715,214 @@ document.getElementById('inicio-saltar').addEventListener('click', cerrarInicioD
 /* FAB ⚡: acceso directo al Tábata desde cualquier vista */
 document.getElementById('tabata-fab').addEventListener('click', () => irA('tabata'));
 
+/* ==================================================================
+   v1.0.3 — EJERCICIOS POR MÚSCULO + "¿QUÉ MÚSCULOS ENTRENÉ?"
+   ================================================================== */
+const MUSCULOS = [['pecho','Pecho'],['espalda','Espalda'],['hombros','Hombros'],['biceps','Bíceps'],['triceps','Tríceps'],
+                  ['cuadriceps','Cuádriceps'],['femorales','Femorales y glúteos'],['gemelos','Gemelos'],['abdomen','Abdomen']];
+const RE_FEMORAL = /rumano|peso muerto|femoral|buenos d[ií]as|gl[uú]teo|kickback|abducci|aducci/i;
+function musculoDeEx(e){
+    if (!e) return null;
+    if (e.grupo === 'brazos') return /^curl/i.test(e.name) ? 'biceps' : 'triceps';
+    if (e.grupo === 'piernas') return RE_FEMORAL.test(e.name) ? 'femorales' : 'cuadriceps';
+    return ['pecho','espalda','hombros','abdomen'].includes(e.grupo) ? e.grupo : null;
+}
+function musculoDeNombre(n){
+    const mm = window._mikeMusculos && window._mikeMusculos[n];
+    return mm || musculoDeEx(exByName(n));
+}
+function diasDesdeFecha(f){ return f ? Math.round((new Date(hoy()) - new Date(f)) / 86400000) : null; }
+function haceTxt(d){ return d === null ? 'sin registro' : d <= 0 ? 'hoy' : d === 1 ? 'ayer' : 'hace ' + d + ' días'; }
+function resumenMusculos(){
+    const logs = DB.get('logs', {}), out = {};
+    const desde = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+    Object.keys(logs).forEach(n => {
+        const m = musculoDeNombre(n); if (!m) return;
+        const o = out[m] || (out[m] = { ult: null, series: 0 });
+        (logs[n] || []).forEach(x => {
+            if (!o.ult || x.fecha > o.ult) o.ult = x.fecha;
+            if (x.fecha >= desde) o.series += (+x.series || 1);
+        });
+    });
+    return out;
+}
+function htmlResumenMusculos(){
+    const r = resumenMusculos();
+    return '<div class="mu-resumen"><h3>📅 ¿Qué músculos entrené?</h3><p class="mu-sub">Según los pesos que registraste (en la guía, tu rutina o 🔥 Mike). Tocá uno para ver sus ejercicios.</p><div class="mu-grid">'
+        + MUSCULOS.map(([id, nom]) => {
+            const o = r[id], d = diasDesdeFecha(o && o.ult);
+            const cls = d === null ? '' : d <= 1 ? 'reciente' : d <= 4 ? 'ok' : 'pendiente';
+            return '<div class="mu-cell ' + cls + '" data-musc="' + id + '"><strong>' + nom + '</strong><span>' + haceTxt(d) + '</span>'
+                + (o && o.series ? '<span class="mu-n">' + o.series + (o.series === 1 ? ' serie' : ' series') + ' en 7 días</span>' : '') + '</div>';
+        }).join('')
+        + '</div><div class="mu-ley"><span><i style="background:#f0a35e"></i>Recién entrenado (descansando)</span><span><i style="background:#58c38a"></i>Listo</span><span><i style="background:#e88b80"></i>Hace 5+ días</span></div></div>';
+}
+function pintarCardMusculos(){
+    const c = document.getElementById('card-musculos');
+    if (c) c.innerHTML = htmlResumenMusculos().replace('class="mu-resumen"', 'class="mu-resumen" style="margin:0 0 1rem"');
+}
+
+let modoEj = 'grupo', muscSel = null;
+window._mikeMediaCambio = () => { if (modoEj === 'musculo') pintarListaMusculo(); };
+function setModoEj(m){
+    modoEj = m;
+    try { localStorage.setItem('gym_ej_modo', m); } catch(_){}
+    document.querySelectorAll('.vm-btn').forEach(b => b.classList.toggle('active', b.dataset.modo === m));
+    document.getElementById('grupo-selection').style.display = m === 'grupo' ? '' : 'none';
+    document.getElementById('musc-panel').style.display = m === 'musculo' ? '' : 'none';
+    document.querySelectorAll('#view-ejercicios .exercises-container').forEach(c => {
+        if (c.id !== 'musculo-view') c.style.display = m === 'musculo' ? 'none' : '';
+    });
+    if (m === 'musculo') renderMusculos();
+}
+function renderMusculos(){
+    document.getElementById('musc-resumen').innerHTML = htmlResumenMusculos();
+    const r = resumenMusculos();
+    document.getElementById('musc-selection').innerHTML = MUSCULOS.map(([id, nom]) =>
+        '<button class="musc-btn' + (id === muscSel ? ' active' : '') + '" data-musc="' + id + '">' + nom
+        + '<small>' + haceTxt(diasDesdeFecha(r[id] && r[id].ult)) + '</small></button>').join('');
+    pintarListaMusculo();
+}
+function pintarListaMusculo(){
+    const cont = document.getElementById('musculo-view');
+    if (!muscSel){ cont.classList.remove('active'); cont.innerHTML = ''; return; }
+    const nom = (MUSCULOS.find(m => m[0] === muscSel) || [, ''])[1];
+    const TIT = { mancuernas:'Con Mancuernas', barra:'Con Barra', poleas:'Con Poleas', personalizado:'Mis ejercicios' };
+    const porCat = {}, orden = [];
+    GRUPOS.forEach(g => {
+        const c = document.getElementById(g); if (!c) return;
+        c.querySelectorAll('.exercise-category').forEach(cat => {
+            const k = cat.getAttribute('data-category') || 'otros';
+            cat.querySelectorAll('.exercise-item:not(.ex-oculto)').forEach(it => {
+                const h = it.querySelector('h4'); if (!h) return;
+                if (musculoDeEx({ grupo: g, name: h.textContent.trim() }) !== muscSel) return;
+                if (!porCat[k]){ porCat[k] = []; orden.push(k); }
+                porCat[k].push(it);
+            });
+        });
+    });
+    cont.innerHTML = '<h2>Ejercicios de ' + nom + '</h2>';
+    const extra = window._mikeSinGuia ? window._mikeSinGuia(muscSel) : [];
+    if (!orden.length && !extra.length){
+        cont.innerHTML += '<p style="color:#667;font-size:.9rem;margin-top:.6rem">' + (muscSel === 'gemelos'
+            ? 'La guía no tiene ejercicios de gemelos. Los encontrás en <strong>🔥 Mike → Piernas</strong> (con máquina, mancuernas o barra).'
+            : 'No hay ejercicios para este músculo.') + '</p>';
+    }
+    orden.forEach(k => {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'exercise-category';
+        catDiv.innerHTML = '<h3>' + (TIT[k] || k) + '</h3><div class="exercise-list"></div>';
+        const list = catDiv.querySelector('.exercise-list');
+        porCat[k].forEach(it => {
+            const cl = it.cloneNode(true);
+            cl.querySelectorAll('button').forEach(b => b.remove());   // los botones de la copia no tendrían función
+            const h = cl.querySelector('h4');
+            if (h){ h.style.cursor = 'pointer'; h.addEventListener('click', () => abrirExModal(h.textContent.trim())); }
+            list.appendChild(cl);
+        });
+        cont.appendChild(catDiv);
+    });
+    if (extra.length){
+        const EQ = { maquina:'Máquina', polea:'Polea', mancuernas:'Mancuernas', barra:'Barra' };
+        const catDiv = document.createElement('div');
+        catDiv.className = 'exercise-category';
+        catDiv.innerHTML = '<h3>Máquinas y otros (de 🔥 Estilo Mike)</h3><div class="exercise-list">'
+            + extra.map(x => '<div class="exercise-item"><h4>' + x.v.n + '</h4>' + window._mikeMediaHTML(x.v)
+                + '<p>' + x.ej.t + ' · ' + EQ[x.eq] + '. En Estilo Mike: 1 serie al fallo, ' + x.ej.reps + ' reps.</p>'
+                + '<div class="exercise-info"><span class="muscle-work">💡 ' + x.ej.tip + '</span></div></div>').join('')
+            + '</div>';
+        cont.appendChild(catDiv);
+        if (window._mikeHidratar) window._mikeHidratar(catDiv);
+    }
+    cont.classList.add('active');
+}
+document.getElementById('view-ejercicios').addEventListener('click', ev => {
+    const vm = ev.target.closest('.vm-btn');
+    if (vm){ setModoEj(vm.dataset.modo); return; }
+    const mb = ev.target.closest('.musc-btn, #musc-resumen .mu-cell');
+    if (mb){
+        muscSel = mb.dataset.musc; renderMusculos();
+        setTimeout(() => document.getElementById('musculo-view').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+});
+document.getElementById('card-musculos').addEventListener('click', ev => {
+    const mc = ev.target.closest('.mu-cell'); if (!mc) return;
+    muscSel = mc.dataset.musc; irA('ejercicios'); setModoEj('musculo');
+    setTimeout(() => document.getElementById('musculo-view').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+});
+
+/* ==================================================================
+   v1.0.3 — SEGUIR DONDE ESTABAS
+   Android cierra apps en segundo plano para liberar memoria. Guardamos
+   dónde estaba la persona y, si vuelve dentro de EST_VENTANA, la app
+   se abre ahí en vez de empezar de cero.
+   ================================================================== */
+const EST_KEY = 'gymshell_estado', EST_VENTANA = 90 * 60 * 1000;
+function capturarEstado(){
+    try {
+        const vista = vistas.find(v => { const el = document.getElementById('view-' + v); return el && el.classList.contains('active-view'); }) || 'ejercicios';
+        const gb = document.querySelector('#grupo-selection .muscle-btn.active');
+        const grupo = gb ? gb.dataset.muscle : null;
+        let filtro = null;
+        if (grupo){ const fb = document.querySelector('#' + grupo + ' .filter-btn.active'); filtro = fb ? fb.dataset.filter : null; }
+        localStorage.setItem(EST_KEY, JSON.stringify({
+            t: Date.now(), vista, y: window.scrollY, grupo, filtro, modoEj, muscSel,
+            ex: document.getElementById('ex-modal').classList.contains('open') ? exActual : null,
+            timer: { sec: tSec, left: tLeft, fin: tInt ? tFin : null, abierto: document.getElementById('timer-overlay').classList.contains('open') },
+            mike: window._mikeGetDia ? window._mikeGetDia() : null
+        }));
+    } catch(_){}
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') capturarEstado(); });
+window.addEventListener('pagehide', capturarEstado);
+setInterval(() => { if (document.visibilityState === 'visible') capturarEstado(); }, 5000);
+
+function restaurarEstado(){
+    let e = null;
+    try { e = JSON.parse(localStorage.getItem(EST_KEY)); } catch(_){}
+    if (!e || !e.t || Date.now() - e.t > EST_VENTANA || !perfil()) return false;
+    try {
+        if (e.modoEj === 'musculo'){ muscSel = e.muscSel || null; setModoEj('musculo'); }
+        else if (e.grupo){
+            const b = document.querySelector('#grupo-selection .muscle-btn[data-muscle="' + e.grupo + '"]');
+            if (b) b.click();
+            if (e.filtro && e.filtro !== 'all'){
+                const f = document.querySelector('#' + e.grupo + ' .filter-btn[data-filter="' + e.filtro + '"]');
+                if (f) f.click();
+            }
+        }
+        if (e.mike && window._mikeSetDia) window._mikeSetDia(e.mike);
+        irA(vistas.includes(e.vista) ? e.vista : 'ejercicios');
+        if (e.timer){
+            tSec = e.timer.sec || tSec;
+            if (e.timer.fin){
+                if (e.timer.fin > Date.now()){ tFin = e.timer.fin; tInt = setInterval(tickTimer, 1000); tickTimer(); }
+                else { tLeft = 0; setTimeout(() => toast('⏱️ Tu descanso terminó mientras no estabas'), 1200); }
+            } else if (typeof e.timer.left === 'number') tLeft = e.timer.left;
+            pintarTimer();
+            if (e.timer.abierto) document.getElementById('timer-overlay').classList.add('open');
+        }
+        if (e.ex && exByName(e.ex)) abrirExModal(e.ex);
+        setTimeout(() => window.scrollTo(0, e.y || 0), 400);
+        toast('↩️ Seguís donde estabas');
+        return true;
+    } catch(_){ return false; }
+}
+
 /* ---------- Arranque ---------- */
 document.getElementById('view-ejercicios').classList.add('active-view');
 pintarTimer();
-if (!perfil()) setTimeout(()=>abrirOnboarding(false), 600);
-else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(); }, 400); }
+function arrancarApp(){
+    let modo = 'grupo';
+    try { modo = localStorage.getItem('gym_ej_modo') || 'grupo'; } catch(_){}
+    if (modo === 'musculo') setModoEj('musculo');
+    if (restaurarEstado()) return;
+    if (!perfil()) setTimeout(()=>abrirOnboarding(false), 600);
+    else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(); }, 400); }
+}
+// Después de que carguen los demás módulos (botones de grupo, Mike).
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancarApp);
+else setTimeout(arrancarApp, 0);
 })();
 </script>
 
@@ -5909,7 +6148,11 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
         }
 
         root.innerHTML = h;
+        hidratar(root);
+    }
 
+    // Imágenes de GitHub que no existen -> "cargar"; fotos/videos propios -> se pintan.
+    function hidratar(root){
         root.querySelectorAll('img[data-pend]').forEach(function(im){
             im.addEventListener('error', function(){
                 var botones = im.nextElementSibling;
@@ -5962,6 +6205,7 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
                 if (viejo) M.del(viejo.mk);
                 aviso(m.mt === 'vid' ? '🎬 Video guardado' : '📷 Foto guardada');
                 render();
+                if (window._mikeMediaCambio) window._mikeMediaCambio();
             }).catch(function(){ aviso('⚠️ No se pudo guardar el archivo (¿memoria llena?)'); });
         });
     }
@@ -5972,6 +6216,7 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
         set('mike_media', todo);
         if (viejo && window._gymMedia) window._gymMedia.del(viejo.mk);
         render();
+        if (window._mikeMediaCambio) window._mikeMediaCambio();
     }
 
     function terminar(){
@@ -5992,7 +6237,16 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 
     document.addEventListener('click', function(e){
         var t = e.target;
-        if (!t.closest || !t.closest('#view-mike')) return;
+        if (!t.closest || !t.closest('#view-mike, #musculo-view')) return;
+        if (t.closest('#musculo-view')){
+            if (t.classList.contains('mk-cargar')) cargarMedia(t.dataset.var);
+            else if (t.classList.contains('mk-quitar')) quitarMedia(t.dataset.var);
+            else if (t.classList.contains('mk-img')){
+                var lb0 = $('mk-lightbox'); lb0.querySelector('img').src = t.src; lb0.querySelector('p').textContent = t.dataset.nombre || '';
+                lb0.classList.add('open');
+            }
+            return;
+        }
         var dia = t.closest('.mk-day');
         if (dia){ st.dia = dia.dataset.dia; render(); return; }
         if (t.classList.contains('mk-eq-global')){
@@ -6018,6 +6272,22 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
     });
 
     window._mikeRender = render;
+    window._mikeGetDia = function(){ return st.dia; };
+    window._mikeSetDia = function(d){ if (DIAS.some(function(x){ return x.id === d; })) st.dia = d; };
+    var MUSC_MIKE = { pecdeck:'pecho', pressinc:'pecho', jalon:'espalda', remo:'espalda', extcuad:'cuadriceps', prensa:'cuadriceps',
+                      femoral:'femorales', gemelos:'gemelos', laterales:'hombros', presshombro:'hombros', biceps:'biceps', triceps:'triceps' };
+    window._mikeSinGuia = function(musc){
+        var out = [];
+        DIAS.forEach(function(d){ d.ej.forEach(function(ej){
+            if (MUSC_MIKE[ej.id] !== musc) return;
+            Object.keys(ej.v).forEach(function(k){ var v = ej.v[k]; if (v.f) out.push({ v: v, ej: ej, eq: k }); });
+        }); });
+        return out;
+    };
+    window._mikeMediaHTML = imgHTML;
+    window._mikeHidratar = hidratar;
+    window._mikeMusculos = {};
+    DIAS.forEach(function(d){ d.ej.forEach(function(ej){ Object.keys(ej.v).forEach(function(k){ window._mikeMusculos[ej.v[k].n] = MUSC_MIKE[ej.id]; }); }); });
 })();
 </script>
 
@@ -6025,14 +6295,16 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 <div class="modal-back" id="novedades-modal" style="align-items:center;z-index:1050">
     <div class="modal-card" style="border-radius:16px;margin:1rem">
         <button class="modal-close" data-close="novedades-modal">✕</button>
-        <h3>🆕 Novedades — versión 1.0.2</h3>
+        <h3>🆕 Novedades — versión 1.0.3</h3>
         <p style="font-size:.9rem;color:#556;margin-bottom:.6rem">¡La app se actualizó sola! Esto es lo nuevo:</p>
+        <div class="log-row"><span>↩️ <strong>Seguís donde estabas</strong>: si salís a otra app y volvés, la app se abre en la misma pantalla, ejercicio y temporizador.</span></div>
+        <div class="log-row"><span>💪 <strong>Ejercicios por músculo</strong> (Bíceps, Tríceps, Cuádriceps…) y <strong>¿qué músculos entrené?</strong> en Ejercicios y Progreso.</span></div>
         <div class="log-row"><span>🔥 <strong>Nuevo módulo Estilo Mike</strong>: rutina Heavy Duty inspirada en Mike Mentzer — 3 días, 1 serie al fallo por ejercicio.</span></div>
         <div class="log-row"><span>🏭 Elegí <strong>máquina, polea, mancuernas o barra</strong> en cada ejercicio, con su imagen.</span></div>
         <div class="log-row"><span>📷 Cargá <strong>tu propia foto o video</strong> en cualquier ejercicio (por ejemplo, la máquina de tu gimnasio).</span></div>
         <div class="log-row"><span>📈 Registra tus series y te dice cuándo subir el peso.</span></div>
         <div class="log-row"><span>🧮 (1.0.1) Calculadora de 1RM y de discos en <strong>📈 Progreso</strong>.</span></div>
-        <p style="font-size:.8rem;color:#889;margin:.6rem 0">Lo encontrás en el botón <strong>🔥 Mike</strong> de abajo.</p>
+        <p style="font-size:.8rem;color:#889;margin:.6rem 0">Probá "Por músculo" arriba de todo en 🏋️ Ejercicios.</p>
         <div class="btn-row">
             <button class="btn green" id="nov-ir">Probar ahora</button>
             <button class="btn ghost" data-close="novedades-modal">Cerrar</button>
@@ -6054,7 +6326,7 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 <script>
 (function(){
     "use strict";
-    var NOVEDADES_VERSION = "1.0.2";
+    var NOVEDADES_VERSION = "1.0.3";
 
     function $(id){ return document.getElementById(id); }
     function logs(){ try { return JSON.parse(localStorage.getItem('gym_logs')) || {}; } catch(e){ return {}; } }
@@ -6145,8 +6417,10 @@ else { saludar(); setTimeout(() => { if (!preguntarModoGuia()) mostrarInicioDia(
 
     $('nov-ir').addEventListener('click', function(){
         $('novedades-modal').classList.remove('open');
-        var nav = document.querySelector('.nav-btn[data-view="mike"]');
+        var nav = document.querySelector('.nav-btn[data-view="ejercicios"]');
         if (nav) nav.click();
+        var vm = document.querySelector('.vm-btn[data-modo="musculo"]');
+        if (vm) vm.click();
     });
     document.querySelectorAll('#novedades-modal [data-close]').forEach(function(b){
         b.addEventListener('click', function(){ $('novedades-modal').classList.remove('open'); });
